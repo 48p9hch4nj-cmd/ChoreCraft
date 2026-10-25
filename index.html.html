@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080c12"><meta name="description" content="Nightfall. Build your defense, reshape the route, hold the core."><title>NIGHTFALL / Grid Defense</title><style>:root{color-scheme:dark;--bg:#080c12;--panel:#10161e;--edge:#28333e;--text:#e4ebf0;--muted:#8796a4;--cyan:#70ddd0;--gold:#e2ba77;font:14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);--board-ratio:1.866667}
+*{box-sizing:border-box}html{overscroll-behavior:none}body{margin:0;background:var(--bg)}button,input,select{font:inherit}button,select{border:1px solid var(--edge);border-radius:5px;background:#17212b;color:var(--text);min-height:38px;padding:8px 12px}button{cursor:pointer;touch-action:manipulation;transition:background .15s,border-color .15s}button:hover{background:#22303b;border-color:#57717d}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible,select:focus-visible,summary:focus-visible,canvas:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}button.active{background:#163a39;border-color:#448a82;color:#a2f0e5}.primary{background:var(--cyan);border-color:var(--cyan);color:#071a1a;font-weight:700}.primary:hover{background:#a1eadd;border-color:#a1eadd}[hidden]{display:none!important}h2,h3,p{margin:0}h2{font-size:18px;font-weight:600}h3{font-size:13px;font-weight:600}small,.eyebrow{font:10px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:1.4px;color:var(--muted)}
+.app-header{height:64px;max-width:1720px;margin:auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #202b35}.brand{display:flex;gap:12px;align-items:center;color:var(--text);text-decoration:none}.brand-mark{width:31px;height:33px;display:grid;place-items:center;background:var(--cyan);color:#071516;font-size:25px;font-style:italic;font-weight:900;clip-path:polygon(0 0,100% 0,100% 75%,75% 100%,0 100%)}.brand-mark span{display:none}.brand b{display:block;font-size:17px;letter-spacing:4px;font-weight:750}.brand small{font-size:8px;letter-spacing:2.7px}.header-actions{display:flex;gap:8px;align-items:center}.header-actions button{font-size:11px;min-height:32px;background:transparent;border-color:#29343f}.header-actions #help{width:32px;padding:4px;font-weight:700}
+main{max-width:1720px;margin:auto;padding:18px 24px 0}.game{display:grid;grid-template-columns:minmax(0,1fr) 218px;gap:20px}.battle-column{min-width:0}.battle-top{display:flex;justify-content:space-between;align-items:center;padding:4px 0 16px}.hud{display:flex;gap:40px}.hud>div{min-width:70px}.hud small{font-size:9px;letter-spacing:1.5px}.hud strong{display:block;font-size:26px;font-weight:650;letter-spacing:-.7px;line-height:1.2;margin-top:3px;font-variant-numeric:tabular-nums}.hud #gold{color:var(--gold)}.hud strong span{font-size:12px;color:#768995;font-weight:400;letter-spacing:0}.health-track{width:80px;height:2px;background:#27373c;margin-top:5px}.health-track i{display:block;height:100%;width:100%;background:var(--cyan)}.status{display:flex;align-items:center;gap:6px;font:10px ui-monospace,monospace;color:#a6b5c2}.status i{width:4px;height:4px;border-radius:100%;background:var(--cyan)}.view-tools{display:flex;justify-content:space-between;gap:8px;padding-bottom:10px}.mode-group,.zoom-group{display:flex;align-items:center;gap:4px}.view-tools button{padding:5px 13px;min-height:32px;font-size:11px;background:#111a23}.view-tools button.active{background:#163a39}.zoom-group span{width:37px;text-align:center;font:10px ui-monospace,monospace;color:var(--muted)}.zoom-group button{padding:4px 9px}.board{position:relative;overflow:hidden;background:#0e151d;border:1px solid #344552;border-radius:3px}canvas#board{display:block;width:100%;height:auto;aspect-ratio:var(--board-ratio);touch-action:none;user-select:none;cursor:crosshair}.field-key{display:flex;justify-content:space-between;align-items:center;padding:7px 0;color:#718392;font:8px ui-monospace,monospace;letter-spacing:1px}.enemy-key{color:#d58a73}.core-key{color:var(--cyan)}.field-hint{font-size:9px;letter-spacing:0;color:#8594a0}
+.placement-bar{display:none;align-items:center;gap:7px;border:1px solid #3c776e;background:#102824;padding:9px;border-radius:5px;margin:7px 0}.previewing:not(.has-tower) .placement-bar{display:flex}.placement-bar #placementHint{flex:1;font-size:11px;color:#bbd2ca}.placement-bar #placementHint.invalid{color:#f7b2a4}.placement-bar button{font-size:11px;white-space:nowrap;min-height:36px}.tower-actions{margin:10px 0;padding:12px;background:#111d25;border:1px solid #3e6669;border-radius:6px}.tower-actions-heading{display:flex;align-items:center;gap:9px;margin-bottom:10px}.tower-actions-heading strong{font-size:15px}.weapon-level{font:500 10px ui-monospace,monospace;color:#adbfc9;background:#1a2833;padding:4px 7px;border-radius:3px;border:1px solid #3d5363}.weapon-level[data-level="2"]{color:#a9d9eb;border-color:#497b97}.weapon-level[data-level="3"]{color:#ead199;border-color:#917846}.tower-actions-heading .weapon-level{margin-left:auto}.tower-actions-heading #closeTower{font-size:20px;line-height:1;min-height:28px;padding:1px 7px;border:0;background:none;color:var(--muted)}.tower-actions-buttons{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.3fr) auto;align-items:end;gap:8px}.tower-actions-buttons button{font-size:12px;min-height:42px}.target-choice{display:flex;flex-direction:column;gap:4px;font-size:10px;color:var(--muted);min-width:0}.target-choice select{width:100%;min-width:0;min-height:42px;padding:8px;font-size:12px;background:#14242e}.tower-actions p{font-size:11px;color:#92a9b4;margin-top:8px}.target-help{color:#a4cbd6!important;font-size:11px;line-height:1.5}.combat-controls{display:flex;align-items:center;gap:7px;margin-top:12px}.combat-controls #start{min-width:200px;display:flex;justify-content:space-between;gap:20px}.combat-controls button{font-size:12px}.combat-controls #remaining{margin-left:auto;font-size:11px;color:var(--muted)}.event-log{padding:10px 0;min-height:37px;font-size:11px;color:#93a6b2}.event-log p{line-height:1.45}
+.arsenal{min-width:0;background:#0e151e;border:1px solid #253441;border-radius:5px;padding:14px}.arsenal-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid #253441}.arsenal-head small{font-size:8px}.arsenal-head h2{font-size:21px;font-weight:550;letter-spacing:-.5px;margin-top:2px}.arsenal-head h2 span{font:10px ui-monospace,monospace;color:#65828c;margin-left:10px}.armory-mark{font-size:27px;color:#61938f}.weapon-guide{font-size:10px;line-height:1.6;color:#94a9b6;padding:11px 0;min-height:53px}#shop{position:relative;display:flex;flex-direction:column;gap:6px}.card{display:grid;grid-template-columns:62px minmax(0,1fr);column-gap:8px;position:relative;min-height:71px;padding:8px 7px;text-align:left;background:#151f2a;border:1px solid #2b3947;border-radius:4px;align-items:center;min-width:0}.card:hover{background:#1c2b35}.card .model-thumb{width:62px;height:48px;grid-row:1/3;pointer-events:none;filter:drop-shadow(0 3px 3px #0008)}.card-text b{display:block;font-size:12px;font-weight:550;line-height:1.3;color:#dae7ec}.card-text small{display:none}.hotkey{position:absolute;left:4px;top:3px;font:7px ui-monospace,monospace;color:#5f7888}.target-badge{display:inline-block;margin-top:4px;color:#a0b2bf;font:9px ui-monospace,monospace;line-height:1.2}.target-air{color:#a9cbf0}.target-ground{color:#d8b38a}.target-both{color:#90cabc}.target-wall{color:#9eacbb}.card .price{grid-column:2;font:11px ui-monospace,monospace;color:#d4b783;margin-top:5px}.card.active{border-color:#68c8b9;background:#17332f;box-shadow:inset 3px 0 #70ddd0}.card.unaffordable{opacity:.45}.card.active.unaffordable{opacity:.65}.next-assault{border-top:1px solid #283643;margin-top:14px;padding-top:12px}.next-assault>small{font-size:8px}#forecast{margin-top:7px;font-size:11px;line-height:1.6;color:#b8c9d3}#forecast b{font-size:14px}#forecast>span{float:right;font:9px ui-monospace,monospace;color:#8ba0af;margin-top:5px}#forecast small{font-size:8px;color:#83a399;letter-spacing:.4px}
+#management{display:none;position:relative;padding:18px;margin-top:16px;background:#101a23;border:1px solid #314453;border-radius:6px;scroll-margin-top:12px}.manage-open #management{display:block}.menu-heading{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2c3e4b;padding-bottom:12px;margin-bottom:16px}.menu-heading button{font-size:11px}.menu-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:25px}.inspector{min-width:0}.inspect-visual{float:right;width:110px;height:78px}#unitPreview{width:100%;height:100%;object-fit:contain}#unitTitle{font-size:17px}#unitLevel{display:inline-block;margin:7px 0}.extra-stats{clear:both;margin:12px 0}.extra-stats summary,.settings-wrap>summary{font-size:12px;cursor:pointer;color:#b8cbd6;padding:8px 0}.extra-stats p,#towerStats{font-size:11px;color:#93adbb;line-height:1.7;margin-top:8px}#upgrade{font-size:12px;min-height:40px;width:100%}.inspect-actions{display:flex;gap:8px;margin-top:8px;align-items:end}.inspect-actions label{flex:1}.inspect-actions button{min-height:42px;font-size:12px}.round-flow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.round-flow button{font-size:11px}.round-flow p{width:100%;font-size:11px;color:var(--muted)}.support{margin-top:22px}.support p{font-size:11px;color:var(--muted);margin:7px 0 10px}.support button{width:100%;display:flex;justify-content:space-between;align-items:center;background:#28302c;border-color:#5c6651;color:#d9d6b5;font-size:12px}.support b{font:11px ui-monospace,monospace}.settings-wrap>summary{font-weight:600}.settings{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}.settings label{font-size:11px;color:#9db0bc;min-width:0}.settings select{width:100%;display:block;margin-top:5px;font-size:12px;padding:8px 6px}.settings .check{grid-column:1/-1;display:flex;align-items:center;gap:7px}.settings input{accent-color:var(--cyan)}.settings select:disabled{opacity:.5}
+.mobile-command,.drawer-grip{display:none}footer{display:flex;justify-content:space-between;padding:15px 0 20px;color:#506977;font:8px ui-monospace,monospace;letter-spacing:1px}dialog{max-width:480px;width:calc(100% - 28px);background:#111c26;color:#d8e3e9;border:1px solid #4a6779;border-radius:10px;padding:24px}dialog::backdrop{background:#03080dcc;backdrop-filter:blur(5px)}dialog h2{font-size:24px;line-height:1.2;margin:10px 0 14px}dialog p{font-size:13px;line-height:1.7;color:#aebfc9;margin:10px 0}dialog button{margin:9px 6px 0 0}.wave-banner{position:absolute;top:9px;left:50%;transform:translateX(-50%);background:#111e28eb;border:1px solid #547f80;border-radius:3px;pointer-events:none;text-align:center;padding:8px 18px;max-width:80%}.wave-banner strong{display:block;font:600 16px ui-monospace,monospace;letter-spacing:1px;color:#b5e9df}.wave-banner small{display:none}.wave-banner>span{font-size:10px;color:#91b7b4}#overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080e17ed;font-size:24px;text-align:center;padding:18px}#overlay small{font-size:12px;letter-spacing:0;margin-top:12px;line-height:1.5}#exitFocus{position:absolute;right:8px;top:8px;font-size:10px;z-index:5}.focus-game .app-header,.focus-game .arsenal,.focus-game footer{display:none}.focus-game .game{grid-template-columns:1fr}.focus-game main{max-width:none;padding:8px}.focus-game .board{max-width:calc((100dvh - 220px) * var(--board-ratio));margin:auto}
+@media(min-width:1500px){.game{grid-template-columns:minmax(0,1fr) 244px}.card{grid-template-columns:72px minmax(0,1fr);min-height:76px}.card .model-thumb{width:72px;height:54px}}
+@media(max-width:1000px){main{padding:14px}.game{grid-template-columns:minmax(0,1fr) 190px;gap:12px}.arsenal{padding:10px}.card{grid-template-columns:48px minmax(0,1fr);padding:8px 5px}.card .model-thumb{width:48px;height:43px}.card-text b{font-size:11px}.hud{gap:26px}.status{font-size:9px}.menu-grid{gap:16px}}
+@media(max-width:760px),(max-width:950px) and (max-height:500px) and (pointer:coarse){body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}.desktop-only{display:none!important}.app-header{height:51px;padding:0 14px}.brand{gap:9px}.brand-mark{width:25px;height:28px;font-size:21px}.brand b{font-size:14px;letter-spacing:3px}.brand small{font-size:7px;letter-spacing:2px}.header-actions{gap:6px}.header-actions button{min-height:30px;padding:5px 8px;font-size:10px}main{padding:10px 10px 0}.game{display:flex;flex-direction:column;gap:0}.battle-top{padding:0 2px 10px}.hud{gap:24px}.hud>div{min-width:55px}.hud small{font-size:8px}.hud strong{font-size:22px}.hud strong span{font-size:10px}.health-track{width:58px}.status{font-size:8px;max-width:75px;text-align:right}.view-tools{padding-bottom:8px}.view-tools button{min-height:34px;font-size:11px;padding:5px 11px}.zoom-group button{padding:5px 9px}.zoom-group span{font-size:9px;width:33px}.field-key{padding:7px 1px}.field-hint{font-size:8px}.board{width:100%}.placement-bar{padding:8px;gap:5px}.placement-bar #placementHint{font-size:10px}.placement-bar button{font-size:11px;padding:7px 9px;min-height:40px}.tower-actions{padding:10px;margin:8px 0}.tower-actions-heading{margin-bottom:7px}.tower-actions-heading strong{font-size:13px}.tower-actions-buttons{grid-template-columns:minmax(0,1.1fr) minmax(0,1.3fr) auto;gap:6px}.tower-actions-buttons button,.target-choice select{font-size:11px;min-height:44px;padding:7px}.tower-actions p{font-size:10px;line-height:1.5;margin-top:7px}.event-log{font-size:10px;padding:7px 1px;min-height:29px}.arsenal{display:none;padding:0;border:0;background:transparent;margin-top:8px}.build-open .arsenal{display:block}.arsenal-head{padding:7px 2px 9px;border-top:1px solid #263540;border-bottom:0}.arsenal-head small{display:none}.arsenal-head h2{font-size:15px;letter-spacing:0}.arsenal-head h2 span{font-size:9px}.armory-mark{display:none}.weapon-guide{display:none}#shop{flex-direction:row;gap:7px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-bottom:8px;scrollbar-width:none}#shop::-webkit-scrollbar{display:none}.card{display:flex;flex-direction:column;align-items:flex-start;flex:0 0 105px;padding:7px 8px;min-height:139px;scroll-snap-align:start;touch-action:pan-x}.card .model-thumb{width:89px;height:59px;align-self:center}.card-text b{font-size:11px}.card .price{font-size:11px;margin-top:8px}.target-badge{font-size:9px;margin-top:4px}.card.active{box-shadow:inset 0 -2px #70ddd0}.hotkey{display:none}.next-assault{display:none}.mobile-command{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:10;padding:9px 10px calc(9px + env(safe-area-inset-bottom));gap:6px;border-top:1px solid #2b414d;background:#0d151ef5;backdrop-filter:blur(12px)}.mobile-command button{font-size:11px;min-height:44px;padding:7px 10px}.mobile-command .primary{flex:1;text-align:left;font-size:12px}.mobile-command #mobileSpeed{padding:7px 9px}.build-open #mobileBay{border-color:#5fa99e;background:#163832;color:#a2e8da}#management{padding:14px 12px;margin-top:10px;scroll-margin-top:8px}.menu-heading{padding-bottom:10px}.menu-heading h2{font-size:17px}.menu-grid{display:flex;flex-direction:column;gap:20px}.mission-options{padding-top:14px;border-top:1px solid #2e414e}.settings-wrap{border-top:1px solid #2e414e;padding-top:10px}.inspect-visual{width:105px;height:73px}.inspector #unitTitle{font-size:18px}.extra-stats p,#towerStats{font-size:12px}footer{font-size:7px;padding-top:16px;gap:10px}.wave-banner{top:5px;padding:4px 10px;max-width:80%}.wave-banner strong{font-size:12px}.wave-banner>span{display:none}.focus-game .board{max-width:none}.focus-game .arsenal{display:none}}
+@media(max-width:380px){.hud{gap:14px}.status{max-width:65px;font-size:7px}.view-tools button{padding:5px 9px}.mobile-command{gap:4px;padding-left:7px;padding-right:7px}.mobile-command button{padding:7px 8px;font-size:10px}.mobile-command .primary{font-size:11px}.tower-actions-buttons button,.target-choice select{font-size:10px}.card{flex-basis:100px}}
+@media(max-height:500px) and (max-width:950px){.app-header{height:40px}.app-header .brand small{display:none}main{padding-top:6px}.battle-top{padding-bottom:6px}.hud strong{font-size:18px}.view-tools{padding-bottom:5px}.board{max-width:calc((100dvh - 160px) * var(--board-ratio));margin:auto}.field-key{max-width:calc((100dvh - 160px) * var(--board-ratio));margin:auto}.arsenal{max-width:100%}.status{font-size:8px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+@media(max-width:760px),(max-width:950px) and (max-height:500px) and (pointer:coarse){.arsenal-head{position:relative}.drawer-grip{display:flex;position:absolute;width:66px;height:25px;left:calc(50% - 33px);top:0;align-items:center;justify-content:center;border:0;background:transparent;padding:0;min-height:25px;touch-action:none}.drawer-grip span{width:28px;height:3px;background:#607b88;border-radius:4px}.drawer-grip:hover{background:transparent}.arsenal-head #buildGrip{left:auto;right:0;top:5px}#management{padding-top:26px}}
+
+@media(max-width:950px) and (max-height:500px) and (pointer:coarse){.app-header{display:none}main{padding-top:6px}.board,.field-key{max-width:calc((100dvh - 180px) * var(--board-ratio))}.battle-top{padding-bottom:5px}.hud strong{font-size:18px}.view-tools{padding-bottom:5px}.view-tools button{min-height:30px}.mobile-command{padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom))}.mobile-command button{min-height:38px}.arsenal-head{padding-top:2px}}
+
+/* Direct aiming controls: no menu to open and the active choice stays visible. */
+.tower-actions-buttons{grid-template-columns:minmax(0,1fr) minmax(0,1.8fr)}
+.tower-actions-heading #quickDetails{font-size:10px;min-height:30px;padding:4px 7px;background:transparent;border-color:#314853;color:#a8c1cb}
+.aim-choice{min-width:0}.aim-choice>span{display:block;font-size:10px;color:#91aab6;margin-bottom:5px}
+.aim-options{display:grid;grid-template-columns:1.15fr 1fr;gap:3px;padding:3px;border:1px solid #354d59;border-radius:5px;background:#0b141d}
+.aim-options button{min-width:0;padding:7px 5px;border-color:transparent;background:transparent;color:#8fa7b3;font-size:11px;line-height:1.3;min-height:38px}
+.aim-options button[aria-pressed="true"]{background:#214c45;border-color:#5da99b;color:#d3f5ea;box-shadow:inset 0 -2px #75d3c0}
+.tower-actions #quickBenefit{font-size:10px;color:#8ea6b1;padding-top:7px;border-top:1px solid #263c47}
+.card-text .weapon-role{display:block;font:9px/1.35 system-ui,sans-serif;letter-spacing:0;color:#92a5b3;margin-top:3px}
+@media(max-width:760px),(max-width:950px) and (max-height:500px) and (pointer:coarse){
+ .tower-actions-buttons{grid-template-columns:minmax(0,1fr) minmax(0,1.8fr)}
+ .aim-options button{font-size:11px;min-height:44px;padding:6px 4px}
+ .tower-actions-heading{gap:6px}.tower-actions-heading strong{font-size:12px}.tower-actions-heading .weapon-level{font-size:9px;padding:3px 5px}
+ .tower-actions-heading #quickDetails{font-size:10px;padding:3px 4px}
+ .tower-actions .target-help{font-size:11px;line-height:1.5}
+ .card-text .weapon-role{font-size:9px;letter-spacing:0;min-height:24px}
+ .field-hint{letter-spacing:0;font-size:8px}
+}
+
+/* Battle commands stay below the field; drafts never hide or cover the map. */
+.tactical-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:6px 0 0}
+.tactical-bar button{min-width:0;min-height:48px;padding:7px 5px;background:#121e29;border-color:#314854;text-align:center}
+.tactical-bar button span{display:block;font-size:12px;white-space:nowrap}
+.tactical-bar button small{display:block;font-size:8px;letter-spacing:.3px;margin-top:4px;color:#9aadb7;white-space:normal}
+.tactical-bar button[aria-pressed="true"]{border-color:#d1ab68;background:#342e22;color:#f0d29a}
+.tactical-bar #overdrive{border-color:#6d6243}.overdriving #overdrive{opacity:1;background:#3b3120;color:#f9d38c}
+.mission-brief{font-size:11px;line-height:1.5;color:#9bb7c0;margin:7px 1px;min-height:17px;font-variant-numeric:tabular-nums}
+.edit-panel{padding:12px;border:1px solid #a28a55;border-radius:6px;background:#1d241f;margin:9px 0}
+.edit-heading{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}.edit-heading strong{font-size:14px;color:#e6d9b4}.edit-heading span{font-size:10px;color:#cbbd99}
+.edit-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.edit-tools button{font-size:11px;min-height:40px;padding:6px;white-space:nowrap}
+.edit-tools button[aria-pressed="true"]{background:#45452b;border-color:#b9ad6f;color:#f5e5b0}
+#editHint{font-size:11px;line-height:1.55;color:#b6c5b8;margin:9px 0}.edit-commit{display:flex;gap:7px}.edit-commit button{font-size:12px;min-height:42px}.edit-commit .primary{flex:1;background:#dac58e;border-color:#dac58e;color:#18221d}
+.editing .board{border-color:#a18e5d}.editing #buildMode.active{background:#393e29;border-color:#a69c63}.marking canvas#board{cursor:crosshair}.marking .board{border-color:#dcac69}
+.editing .placement-bar,.marking .placement-bar{display:none!important}
+@media(max-width:760px),(max-width:950px) and (max-height:500px) and (pointer:coarse){
+ .tactical-bar{gap:5px;margin-top:3px}.tactical-bar button{min-height:46px;padding:6px 3px}.tactical-bar button span{font-size:11px}.tactical-bar button small{font-size:7px;letter-spacing:0}
+ .mission-brief{font-size:10px;margin:6px 1px}.edit-panel{padding:10px}.edit-tools button{min-height:44px;font-size:11px}.edit-heading strong{font-size:13px}.edit-heading span{font-size:9px}
+}
+
+@media(max-width:760px),(max-width:950px) and (max-height:500px) and (pointer:coarse){
+ .battle-column{display:contents}.arsenal{order:1}.event-log{order:2}
+ .tactical-bar button{min-height:44px;padding:4px 3px}.tactical-bar button small{line-height:1.2}
+ .aim-choice>span{display:none}.tower-actions #quickBenefit{padding-top:4px;margin-top:5px}
+ .card-text .weapon-role{min-height:12px}
+}
+.battery-saving .mobile-command{backdrop-filter:none;background:#0d151e}.battery-saving .model-thumb{filter:none}.battery-saving dialog::backdrop{backdrop-filter:none}
+@media(max-width:760px),(max-width:950px) and (max-height:500px) and (pointer:coarse){.tower-actions{padding:8px}.tower-actions-heading{margin-bottom:5px}}
+
+/* Keep free movement and paid changes distinct, with one financial review. */
+.edit-tools{grid-template-columns:1.25fr 1fr auto}
+.editing .tactical-bar,.editing #missionBrief,.editing #buildMode{display:none!important}
+.editing #quickTarget,.editing #quickTargetHelp,.editing #quickBenefit{display:none!important}
+.editing .tower-actions-buttons{grid-template-columns:1fr 1fr}
+.edit-tools #editRelocate[aria-pressed="true"]{background:#163d38;border-color:#64b4a4;color:#c0f0df}
+.edit-tools #editBuild[aria-pressed="true"]{background:#3b3426;border-color:#bca36d;color:#f2d9a7}
+.edit-ledger{display:flex;justify-content:space-between;gap:12px;padding:8px 0 10px;color:#a4b9bd;font-size:11px;font-variant-numeric:tabular-nums}
+.edit-ledger b{color:#e3d1a9;margin-left:5px;font-weight:500}
+.sale-action{background:#302323;border-color:#88615a;color:#f0b8a4;font-size:11px}
+.sale-help{font-size:11px!important;line-height:1.5;color:#e0c69f!important}
+.financial-dialog{max-width:430px;max-height:calc(100dvh - 30px);overflow-y:auto;padding:22px}
+.financial-dialog h2{font-size:23px;margin:8px 0 17px}
+.review-ledger{margin:0;font-size:13px;font-variant-numeric:tabular-nums}
+.review-ledger>div{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid #293e4a}
+.review-ledger dt{color:#a7bcc6}.review-ledger dd{margin:0;color:#e3ecea;white-space:nowrap}
+.review-ledger>div:last-child{padding:14px 0;font-weight:650}.review-ledger>div:last-child dd{color:#e6ca8d;font-size:19px}
+.financial-dialog .sale-loss{color:#e9ba98;font-size:12px;line-height:1.5;margin:13px 0}
+.financial-dialog .review-note{font-size:11px;line-height:1.5;color:#94aeb8}
+.dialog-actions{display:flex;gap:8px;margin-top:17px}.dialog-actions button{flex:1;margin:0;min-height:44px;font-size:12px;padding:8px}
+@media(max-width:760px){.financial-dialog{padding:18px}.edit-ledger{font-size:10px}}
+#quickSell[data-action="cancel"]{background:#1c2e38;border-color:#4d7482;color:#c7dbe2}
+
+/* Batch is only Place / Remove, followed by one Confirm or Cancel. */
+.batch-panel{padding:9px;border-color:#4a7774;background:#102020}
+.batch-tools{display:grid;grid-template-columns:1fr 1fr auto auto;gap:6px}
+.batch-tools button{min-height:44px;padding:7px 10px;font-size:12px}
+.batch-tools [aria-pressed="true"]{background:#214d44;border-color:#68baa6;color:#d7f3e7}
+.batch-tools #batchRemove[aria-pressed="true"]{background:#4b2b29;border-color:#c18373;color:#f4c2ac}
+.batch-panel #editSummary{font-size:10px;line-height:1.5;margin:7px 1px 0;color:#afc5c7;font-variant-numeric:tabular-nums}
+.editing #towerActions,.editing .inspector{display:none!important}
+@media(max-width:380px){.batch-tools{gap:4px}.batch-tools button{font-size:11px;padding:6px 7px}}
+.batch-tools{grid-template-columns:1fr 1.1fr 1fr auto auto}.batch-tools button{min-width:0;padding:7px 6px;font-size:11px}.batch-tools #batchUpgrade[aria-pressed="true"]{background:#263e57;border-color:#83b5da;color:#d6ebff}
+.size-badge{position:absolute;right:5px;top:5px;z-index:1;display:flex;align-items:center;gap:5px;padding:4px 5px;border:1px solid #b89d68;border-radius:3px;background:#19251ff5;color:#f0d394;font:600 11px/1 ui-monospace,monospace;pointer-events:none}.size-badge i{display:grid;grid-template-columns:4px 4px;gap:1px}.size-badge i b{width:4px;height:4px;background:#d8c58f}.arsenal-head{flex-wrap:wrap;gap:7px}.arsenal-head .armory-mark{display:none}#largeMachines{font-size:10px;min-height:30px;padding:4px 7px;color:#e5cd92;border-color:#776541;background:#25271f;margin-left:auto}
+@media(max-width:760px),(max-width:950px) and (max-height:500px) and (pointer:coarse){#largeMachines{margin-right:39px}.size-badge{font-size:12px;padding:4px 5px}}
+</style></head>
+<body class="build-open">
+<header class="app-header"><a class="brand" href="./" aria-label="Nightfall Grid Defense"><span class="brand-mark" aria-hidden="true">N<span>/</span></span><span><b>NIGHTFALL</b><small>GRID DEFENSE</small></span></a><div class="header-actions"><button id="sound" aria-pressed="false">Sound off</button><button id="help" aria-label="Open how to play">?</button><button id="manage" class="desktop-only">Settings</button></div></header>
+<main>
+<section class="game" aria-label="Defense mission">
+<div class="battle-column">
+<div class="battle-top"><div class="hud"><div><small id="fundsLabel">FUNDS</small><strong id="gold">$40,000</strong></div><div><small>CORE</small><strong id="health">20 <span>/ 20</span></strong><div class="health-track"><i id="healthFill"></i></div></div><div><small>WAVE</small><strong id="wave">00 <span>/ ∞</span></strong></div></div><div class="status"><i></i><span id="phase">Ready</span></div></div>
+<div class="view-tools"><div class="mode-group" aria-label="Map tools"><button id="buildMode" class="active">Build</button><button id="panMode">Pan</button><button id="sell" hidden>Sell selected</button></div><div class="zoom-group" aria-label="Camera"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomLabel">100%</span><button id="zoomIn" aria-label="Zoom in">+</button><button id="fitView">Fit</button><button id="focusMode" class="desktop-only" title="Expand battlefield">Expand</button></div></div>
+<div class="board"><canvas id="board" width="1344" height="720" tabindex="0" aria-label="Battlefield. Arrow keys move the build cursor; Enter deploys. Tap to preview, then confirm. Two fingers move and zoom."></canvas><div id="waveBanner" class="wave-banner" hidden><small id="bannerLabel"></small><strong id="bannerTitle"></strong><span id="bannerText"></span></div><div id="overlay" hidden></div><button id="exitFocus" hidden>Close expanded view</button></div>
+<div class="field-key"><span class="enemy-key">BREACHES</span><span id="aimLegend" class="field-hint">Choose a weapon. Shape the route.</span><span class="core-key">CORE</span></div>
+<div class="tactical-bar" aria-label="Tactical controls"><button id="editMode" aria-pressed="false"><span>Batch</span><small>BETWEEN WAVES</small></button><button id="quickEmp" title="Slow all enemies and disable shields for 5 seconds. Once per wave."><span>EMP pulse</span><small>$2,000</small></button><button id="overdrive" title="All weapons fire twice as fast for 6 seconds. Once per wave."><span>Overdrive</span><small>$4,000</small></button><button id="markTarget" aria-pressed="false" title="Tap an enemy to make every eligible gun in range prioritize it. Free."><span>Mark enemy</span><small>FOCUS FIRE · FREE</small></button></div>
+<p id="missionBrief" class="mission-brief"></p>
+<section id="editPanel" class="edit-panel batch-panel" aria-label="Batch placement" hidden><div class="batch-tools" role="group" aria-label="Batch action"><button id="editBuild" aria-pressed="true">Place</button><button id="batchUpgrade" aria-pressed="false">Upgrade</button><button id="batchRemove" aria-pressed="false">Remove</button><button id="editCancel">Cancel</button><button id="editConfirm" class="primary">Confirm</button></div><p id="editSummary" aria-live="polite">Batch on · waves held</p></section>
+<div class="placement-bar"><span id="placementHint">Tap ground to preview.</span><button id="confirmPlace" class="primary" hidden>Deploy here</button><button id="cancelPlace" hidden>Cancel</button></div>
+<section id="towerActions" class="tower-actions" aria-label="Selected tower controls" hidden><div class="tower-actions-heading"><strong id="quickTitle"></strong><span id="quickLevel" class="weapon-level"></span><button id="quickDetails">Details</button><button id="closeTower" aria-label="Close tower controls">×</button></div><div class="tower-actions-buttons"><button id="quickUpgrade" class="primary"></button><div id="quickTarget" class="aim-choice" role="group" aria-label="Aim priority" aria-describedby="quickTargetHelp"><span>Aim · enemies in range</span><div class="aim-options"><button data-priority="first" aria-pressed="true">Closest to core</button><button data-priority="strongest" aria-pressed="false">Most health</button></div></div></div><p id="quickTargetHelp" class="target-help"></p><p id="quickBenefit"></p></section>
+<div class="combat-controls desktop-only"><button id="start" class="primary">Launch wave 01</button><button id="pause">Pause</button><button id="speed">1× Speed</button><span id="remaining">Plan your defense</span></div>
+<div class="event-log"><p id="message" role="status">Build a defense, then launch the first wave.</p></div>
+</div>
+<aside class="arsenal" aria-label="Weapons"><div class="arsenal-head"><div><small>YOUR DEFENSE</small><h2>Armory<span>07</span></h2></div><button id="largeMachines" type="button">2×2 machines →</button><span class="armory-mark" aria-hidden="true">＋</span><button id="buildGrip" class="drawer-grip" aria-label="Close armory. Swipe down or tap."><span></span></button></div><p id="weaponGuide" class="weapon-guide">Select a weapon to build.</p><div id="shop"></div><div class="next-assault"><small>NEXT WAVE</small><div id="forecast"></div></div></aside>
+</section>
+<aside id="management" aria-label="Mission settings"><button id="manageGrip" class="drawer-grip" aria-label="Close settings. Swipe down or tap."><span></span></button><div class="menu-heading"><h2>Mission controls</h2><button id="closeManage">Done ×</button></div><div class="menu-grid">
+<section class="inspector"><div class="inspect-visual"><canvas id="unitPreview" width="240" height="150" aria-label="Selected weapon"></canvas><span id="unitCode" hidden></span></div><h2 id="unitTitle">Pulse turret</h2><div id="unitLevel" class="weapon-level"></div><details class="extra-stats"><summary>Weapon details</summary><p id="inspect"></p><div id="towerStats"></div><p id="details"></p></details><button id="upgrade">Upgrade</button><div class="inspect-actions"><label class="target-choice">Target<select id="target"><option value="first">Closest to core</option><option value="strongest">Most health</option></select></label><button id="sellSelected">Sell</button></div><p id="targetHelp" class="target-help">Shoots the enemy closest to your core.</p></section>
+<section class="mission-options"><h3>Wave control</h3><div class="round-flow"><button id="auto" class="active" aria-pressed="true">Auto-play: on</button><button id="restart" class="reset-button">Reset run</button><p id="roundHint">Following waves start automatically.</p></div><div class="save-tools"><h3>Save backup</h3><button id="exportSave">Download save</button> <button id="importSave">Load save file</button><input id="saveFile" type="file" accept="application/json,.json" hidden><p>Auto-saves stay in this browser. Download a backup to keep in Files.</p></div><div class="support"><h3>Emergency pulse</h3><p>Use once per wave to slow all enemies and turn off shields for 5 seconds.</p><button id="emp"><span>EMP pulse</span><b>$2,000</b></button></div></section>
+<details class="settings-wrap"><summary>Game settings</summary><section class="settings"><label>Map size<select id="size"><option value="compact">Compact · 20 × 11</option><option value="expanded" selected>Expanded · 28 × 15</option></select></label><label>Entry hubs<select id="hubs"><option value="3">3 hubs</option><option value="5">5 hubs</option></select></label><label>Terrain<select id="map"><option value="open">Open sector</option><option value="alleys">Server alleys</option><option value="islands">Data islands</option></select></label><label>Difficulty<select id="difficulty"><option value="0.7">Chill</option><option value="1" selected>Standard</option><option value="1.5">Overclocked</option></select></label><label class="check"><input id="air" type="checkbox" checked> Flying enemies</label><label class="check"><input id="endless" type="checkbox" checked> Endless waves</label><label class="check"><input id="batterySaver" type="checkbox" checked> Battery saver · 30 FPS</label><label class="check"><input id="reduced" type="checkbox"> Reduced effects</label></section></details></div></aside>
+<footer><span id="record">BEST WAVE 0</span><span>NIGHTFALL // HOLD THE CORE</span></footer>
+</main>
+<nav class="mobile-command" aria-label="Game controls"><button id="mobileStart" class="primary">Launch wave 01</button><button id="mobilePause" aria-label="Pause or resume">Pause</button><button id="mobileSpeed" aria-label="Game speed">1×</button><button id="mobileBay" aria-expanded="true">Armory</button><button id="mobileMore">Menu</button></nav><span id="mobileSelected" hidden></span>
+<dialog id="saleDialog" class="financial-dialog" aria-labelledby="saleTitle"><span class="eyebrow">SELL SELECTED TOWER</span><h2 id="saleTitle">Sell this tower?</h2><p id="saleQuote"></p><p id="saleLoss" class="sale-loss"></p><div class="dialog-actions"><button id="cancelSale" class="primary">Keep tower</button><button id="confirmSale" class="sale-action">Sell</button></div></dialog>
+<dialog id="resumeDialog"><span class="eyebrow">MISSION CHECKPOINT</span><h2>Welcome back, commander.</h2><p id="resumeInfo"></p><p>Resume from your last preparation phase. Any unfinished wave restarts from its beginning.</p><button id="resumeRun" class="primary">Resume mission →</button><button id="newRun">New mission</button></dialog>
+<dialog id="instructions"><span class="eyebrow">FIELD GUIDE</span><h2>Build a maze. Hold the core.</h2><p>Choose a weapon, tap a tile to preview, then confirm. Walls and towers redirect ground enemies. Drones fly over them.</p><p><b>Batch.</b> Between waves, turn Batch on. Choose Place to tap several new defenses onto the board, Upgrade to tap several towers for one level each, or Remove to mark several structures. Tap a red removal mark again to keep that structure. Confirm applies the batch; Cancel restores everything. Existing structures return 70% when removed; cancelling a new unconfirmed placement returns its full cost. Waves wait until you confirm or cancel.</p><p><b>Tactics.</b> EMP slows enemies and disables shields for 5 seconds ($2,000). Overdrive doubles weapon fire rate for 6 seconds ($4,000). Each can be used once per wave. Mark enemy is free: tap a threat and every weapon that can hit it within range prioritizes it. Clear the mark to return to normal aiming. Pause holds ability timers too.</p><p><b>Four weapons.</b> Arc sentry cleans up light ground and air targets, chaining to a second enemy and bypassing shields. Siege mortar blasts ground crowds. Rail battery is a 2×2 armor-piercing ground weapon for tanks and bosses. Skyguard is dedicated anti-air.</p><p><b>2×2 hubs.</b> Cryo hub slows ground enemies in its blue field by 35%. Power relay makes guns in its gold field fire 25% faster. Each upgrade improves the field effect by 10 percentage points and slightly increases range. Fields of the same kind do not stack. All four footprint tiles must be clear; tap any part to select, remove or upgrade the whole machine.</p><p><b>Upgrades.</b> Tap a tower for its Upgrade button. Steel, blue and gold mounts show its three levels. Its range ring stays visible while selected; brackets mark its priority target.</p><p><b>Aiming.</b> Guns fire automatically at enemies they can hit within range. <b>Closest to core</b> stops escapes: leave most guns on this. <b>Most health</b> wears down tougher enemies: try it on a Railgun against tanks or bosses, with a Pulse or Gatling on Closest to core nearby. You can change either choice during combat for free.</p><p><b>Shields.</b> From wave 7, shield carriers have a blue ring. They and nearby ground troops take 35% less damage. Arc sentries bypass shields; EMP turns them off for 5 seconds.</p><p><b>Controls.</b> Two fingers move and zoom the map. Move mode lets you drag with one finger. Build mode keeps it steady. A temporary line previews your proposed route; no purchase is needed. Swipe sideways through weapons.</p><p><b>Armored enemies.</b> Armor reduces ordinary weapon damage. Rail batteries and mortars pierce armor. Cryo hubs slow ground enemies; Arc sentries chain to two targets.</p><p><b>Waves.</b> Launch once. Auto-play sends following waves after five seconds. You can build during combat. Pause also stops the countdown. Selling returns 70% of the money invested.</p><p><b>Battery.</b> Battery saver defaults on for phones: 30 FPS, fewer decorative effects, and no redraws while paused or idle. Combat timing stays the same. Reduced effects separately removes extra particles.</p><p>Your preparation phase is saved in this browser. An interrupted wave restarts from its beginning when you resume.</p><button id="closeHelp" class="primary">Got it</button></dialog>
+<script>'use strict';
+const canvas=document.querySelector('#board'),ctx=canvas.getContext('2d'),$=s=>document.querySelector(s);
+const S=48;let W=28,H=15,WORLD_W=W*S,WORLD_H=H*S,hubRows=[1,7,13],entrance={x:0,y:7},exit={x:27,y:7};
+const types=[{name:'Pulse turret',cost:60,range:3.2,damage:15,rate:.5,color:'#41e9d5',icon:'✦',desc:'Quick shots · Reliable all-rounder'},{name:'Plasma mortar',cost:110,range:3.1,damage:32,rate:1.7,color:'#ffad55',icon:'♠',desc:'Splash damage · Crowd control'},{name:'Cryo node',cost:90,range:2.8,damage:7,rate:.8,color:'#75bfff',icon:'❄',desc:'Slows enemies · Buy some time'},{name:'Firewall',cost:10,range:0,damage:0,rate:0,color:'#68759d',icon:'▤',desc:'Shape the path · Build a maze'}];
+types.push({name:'Railgun',cost:160,range:5.8,damage:90,rate:2.2,color:'#ed73fc',icon:'⌁',desc:'Long range · Heavy precision'},{name:'Tesla coil',cost:140,range:2.6,damage:23,rate:.9,color:'#b8f56c',icon:'ϟ',desc:'Chain lightning · Hits 3 targets'},{name:'Gatling',cost:125,range:2.4,damage:6,rate:.10,color:'#ff6a91',icon:'≋',desc:'Rapid fire · Close defense'});
+types.push({name:'Sky interceptor',cost:120,range:4.2,damage:34,rate:.55,color:'#f4d878',icon:'⌖',desc:'Air only · Drone interception'});
+[6000,12000,8000,1000,16000,14000,10000,12000].forEach((v,i)=>types[i].cost=v);
+types.push({name:'Power relay',cost:18000,range:3.5,damage:0,rate:0,color:'#e6bd6e',icon:'◇',size:2,desc:'2×2 · Nearby guns fire 25% faster'},{name:'Cryo hub',cost:14000,range:3.2,damage:0,rate:0,color:'#86d7f0',icon:'❄',size:2,desc:'2×2 · Slows nearby ground enemies by 35%'});
+Object.assign(types[0],{name:'Arc sentry',desc:'Chains to two · Bypasses shields'});
+Object.assign(types[1],{name:'Siege mortar',desc:'Ground crowds · Wide explosive splash'});
+Object.assign(types[4],{name:'Rail battery',cost:24000,damage:200,rate:2.6,range:6.1,size:2,desc:'2×2 · Ground armor and bosses'});
+Object.assign(types[7],{name:'Skyguard',desc:'Dedicated anti-air · Long interception range'});
+const shopTypes=[0,1,7,4,9,8,3];
+const upgradeNames=['Standard','Enhanced','Elite'];
+const targetKinds=['both','ground','ground','wall','ground','ground','both','air','support','field'];
+const targetLabels={both:'Ground + air',ground:'Ground only',air:'Air only',wall:'Blocks ground',support:'Boosts nearby guns',field:'Slows ground'};
+const targetNotes={both:'Hits ground troops and flying drones.',ground:'Hits ground troops. Cannot hit flying drones.',air:'Hits flying drones. Cannot hit ground troops.',wall:'Redirects ground troops. Drones fly over walls.',support:'2×2 · Nearby guns fire 25% faster, +10% per upgrade. Does not stack.',field:'2×2 · Slows ground enemies by 35%, +10% per upgrade. Does not stack.'};
+const weaponRoles=['All-rounder','Crowds · pierces armor','Slows enemies','Shapes the route','Tanks · pierces armor','Chains · bypasses shields','Rapid cleanup','Drone defense','25% faster fire · 2×2','35% slow field · 2×2'];
+weaponRoles[0]='Chains · bypasses shields';weaponRoles[1]='Splash · crowds';weaponRoles[4]='Armor + bosses · 2×2';weaponRoles[7]='Dedicated anti-air';
+let hudTime=0,renderDirty=true,steppingFrame=false;
+function batterySaving(){return $('#batterySaver').checked}
+let waveHealth=20,perfectStreak=0,bestWave=0;try{bestWave=Number(localStorage.getItem('grid-best'))||0}catch{}
+let routeCache=new Map(),autoWave=true,focused=null,empUsed=false;
+try{autoWave=localStorage.getItem('grid-auto-waves')!=='off'}catch{}
+let buildings,enemies,effects,gold,health,wave,active,paused,speed,spawnLeft,spawnTimer,selected=0,hover=null,cursor={x:4,y:4},ended=false,kills=0;
+const key=(x,y)=>y*W+x;
+let projectiles=[],bursts=[],renderClock=0,bannerTime=0,autoTime=0,soundOn=false,audioCtx=null;
+let editSession=null,editTool='build',editApplying=false,editQueued=false;
+let marking=false,markedEnemy=null,overdriveTime=0,overdriveUsed=false;
+
+let view={zoom:1,x:0,y:0},panMode=false,pending=null,previewCache=null,particles=[],scorches=[];
+const pointers=new Map();let gesture=null,pinch=null;
+function clampView(){renderDirty=true;view.zoom=Math.max(1,Math.min(3,view.zoom));view.x=Math.max(WORLD_W*(1-view.zoom),Math.min(0,view.x));view.y=Math.max(WORLD_H*(1-view.zoom),Math.min(0,view.y));$('#zoomLabel').textContent=Math.round(view.zoom*100)+'%';}
+function zoomAt(f,cx=WORLD_W/2,cy=WORLD_H/2){const z=view.zoom;view.zoom=Math.max(1,Math.min(3,z*f));view.x=cx-(cx-view.x)*view.zoom/z;view.y=cy-(cy-view.y)*view.zoom/z;clampView()}
+function mobileLayout(){return window.matchMedia('(max-width:760px), (max-width:950px) and (max-height:500px) and (pointer:coarse)').matches}
+function screenPoint(e){const r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*WORLD_W,y:(e.clientY-r.top)/r.height*WORLD_H}}
+function pointer(e){const p=screenPoint(e);return {x:Math.max(0,Math.min(W-1,Math.floor((p.x-view.x)/view.zoom/S))),y:Math.max(0,Math.min(H-1,Math.floor((p.y-view.y)/view.zoom/S)))}}
+function syncModes(){$('#panMode').classList.toggle('active',panMode);$('#buildMode').classList.toggle('active',!panMode&&selected!==-1);canvas.style.cursor=panMode?'grab':'crosshair';refreshPlacement()}
+let occupancyCache=null,fieldCache=null;
+function fieldMachines(type){if(!fieldCache){fieldCache={8:[],9:[]};for(const b of buildings.values())if(b.type>=8)fieldCache[b.type].push(b)}return fieldCache[type]}
+function spanOf(b){return b.type>=8?2:b.span||types[b.type].size||1}
+function centerX(b){return b.x+spanOf(b)/2}function centerY(b){return b.y+spanOf(b)/2}
+function areaCells(x,y,span){return Array.from({length:span*span},(_,i)=>({x:x+i%span,y:y+Math.floor(i/span)}))}
+function structureAt(x,y){const direct=buildings?.get(key(x,y));if(direct)return direct;return [...(buildings?.values()||[])].find(b=>spanOf(b)>1&&x>=b.x&&x<b.x+spanOf(b)&&y>=b.y&&y<b.y+spanOf(b))}
+function blocked(id){if(!occupancyCache){occupancyCache=new Set();for(const b of buildings.values())for(const c of areaCells(b.x,b.y,spanOf(b)))occupancyCache.add(key(c.x,c.y))}return occupancyCache.has(id)}
+function areaReason(x,y,type){const span=types[type].size||1;if(x<=0||x+span>W-1||y<0||y+span>H)return 'Keep the whole footprint inside the battlefield and off edge lanes';for(const c of areaCells(x,y,span)){if(structureAt(c.x,c.y))return 'Needs '+span+'×'+span+' empty tiles';if(enemies.some(e=>!e.flying&&(Math.floor(e.x)===c.x&&Math.floor(e.y)===c.y||e.target&&(e.target.x===c.x&&e.target.y===c.y||e.target.x!==Math.floor(e.x)&&e.target.y!==Math.floor(e.y)&&(c.x===e.target.x&&c.y===Math.floor(e.y)||c.y===e.target.y&&c.x===Math.floor(e.x))))))return 'An enemy is crossing this footprint'}return ''}
+function relayBonus(b){let bonus=0;for(const h of fieldMachines(8))if(Math.hypot(centerX(h)-centerX(b),centerY(h)-centerY(b))<=types[8].range+(h.level-1)*.25)bonus=Math.max(bonus,.25+(h.level-1)*.1);return bonus}
+function cryoFactor(e){if(e.flying)return 1;let factor=1;for(const h of fieldMachines(9))if(Math.hypot(centerX(h)-e.x,centerY(h)-e.y)<=types[9].range+(h.level-1)*.25)factor=Math.min(factor,.65-(h.level-1)*.1);return factor}
+function validity(x,y){const id=[x,y,selected,gold,active?Math.floor(renderClock*(batterySaving()?2:8)):0].join(':');if(previewCache?.id===id)return previewCache.result;
+ let reason='';const old=structureAt(x,y);if(ended)reason='Mission ended';else if(old)reason=old.terrain?'Fixed terrain':selected===-1?'Sell for $'+refund(old).toLocaleString():'Inspect '+types[old.type].name;else if(selected===-1)reason='Select a structure to sell';else if(selected===null)reason='Choose a system from the arsenal';else if(areaReason(x,y,selected))reason=areaReason(x,y,selected);else if(gold<types[selected].cost)reason='Insufficient funds';else if(enemies.some(e=>!e.flying&&(Math.floor(e.x)===x&&Math.floor(e.y)===y||e.target&&(e.target.x===x&&e.target.y===y||e.target.x!==Math.floor(e.x)&&e.target.y!==Math.floor(e.y)&&(x===e.target.x&&y===Math.floor(e.y)||y===e.target.y&&x===Math.floor(e.x))))))reason='Enemy crossing this tile';
+ let paths=null;
+ if(!reason||reason==='Insufficient funds'){
+  const cache=routeCache;buildings.set(key(x,y),{x,y,type:selected,level:1});routeCache=new Map();occupancyCache=null;
+  try{
+   const directPaths=hubRows.map(row=>route(0,row));
+   if(directPaths.some(path=>!path)||enemies.some(e=>!e.flying&&!route(Math.floor(e.x),Math.floor(e.y))))reason='Would block an enemy route';
+   else paths=directPaths.map((path,i)=>i===0?route(0,hubRows[i],'cautious'):path);
+  }finally{buildings.delete(key(x,y));routeCache=cache;occupancyCache=null}
+ }
+ const result={ok:!reason||!!old&&!old.terrain,build:!reason,paths,text:reason?(paths?reason+' · Route preview only':reason):'Route preview · Deploy '+types[selected].name+(types[selected].size===2?' · 2×2 (4 tiles)':'')+' · $'+types[selected].cost.toLocaleString()};previewCache={id,result};return result;
+}
+function refreshPlacement(){renderDirty=true;if(!$('#placementHint'))return;if(editSession||marking){pending=null;document.body.classList.remove('placing','previewing');return}document.body.classList.toggle('placing',!!pending);document.body.classList.toggle('previewing',!!(pending||hover)&&!panMode);const tile=pending||hover;const v=tile?validity(tile.x,tile.y):null;$('#placementHint').textContent=panMode?'Move mode · Drag to look around':v?v.text:selected!==null&&selected>=0?types[selected].name+' · Hover or tap a tile to preview its route':'Choose a system or inspect a deployed tower';$('#placementHint').classList.toggle('invalid',!!v&&!v.ok);$('#confirmPlace').hidden=!pending||panMode;$('#cancelPlace').hidden=!pending;$('#confirmPlace').disabled=!!v&&!v.ok;$('#confirmPlace').textContent=selected===-1?'Confirm sale':'Deploy here';}
+function drawPlacement(){
+ if(marking||editSession&&editTool!=='build')return;const tile=pending||hover;if(!tile||panMode)return;
+ const b=structureAt(tile.x,tile.y),x=b?.x??tile.x,y=b?.y??tile.y,t=types[b?b.type:selected],span=b?spanOf(b):t?.size||1,v=validity(tile.x,tile.y),cx=x+span/2,cy=y+span/2,c=v.ok?'#66e5cb':'#ff6b7d';
+ ctx.save();ctx.fillStyle=v.ok?'#61e7c922':'#ff5d752b';ctx.fillRect(x*S,y*S,S*span,S*span);ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.strokeRect(x*S+1,y*S+1,S*span-2,S*span-2);if(span===2){ctx.beginPath();ctx.moveTo((x+1)*S,y*S+1);ctx.lineTo((x+1)*S,(y+2)*S-1);ctx.moveTo(x*S+1,(y+1)*S);ctx.lineTo((x+2)*S-1,(y+1)*S);ctx.stroke()}
+ if(t?.range&&!b&&selected!==null&&selected>=0){ctx.beginPath();ctx.arc(cx*S,cy*S,(t.range+(b?(b.level-1)*.25:0))*S,0,7);ctx.fillStyle='#5dd9c00a';ctx.fill();ctx.setLineDash([5,5]);ctx.strokeStyle=c+'66';ctx.stroke();ctx.setLineDash([])}
+ if(!b&&t&&v.build){ctx.globalAlpha=.65;if(typeof drawModel==='function'){ctx.translate(cx*S,cy*S);drawModel(ctx,selected,{angle:-.5})}}ctx.restore();
+}
+function revealCursor(){view.x=Math.min(0,Math.max(WORLD_W*(1-view.zoom),WORLD_W/2-(cursor.x+.5)*S*view.zoom));view.y=Math.min(0,Math.max(WORLD_H*(1-view.zoom),WORLD_H/2-(cursor.y+.5)*S*view.zoom));clampView()}
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+canvas.addEventListener('wheel',e=>{if(e.ctrlKey)return;e.preventDefault();const p=screenPoint(e);zoomAt(Math.exp(-e.deltaY*.0015),p.x,p.y)},{passive:false});
+function touchPair(){const [a,b]=[...pointers.values()];return {clientX:(a.clientX+b.clientX)/2,clientY:(a.clientY+b.clientY)/2,distance:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}}
+canvas.addEventListener('pointerdown',e=>{
+ if(e.button>0&&e.button!==2&&e.button!==1)return;
+ canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{clientX:e.clientX,clientY:e.clientY});
+ if(pointers.size>=2){gesture=null;pending=null;hover=null;refreshPlacement();pinch=pointers.size===2?{...touchPair(),view:{...view},active:false}:null;return}
+ const p=screenPoint(e);gesture={id:e.pointerId,startClientX:e.clientX,startClientY:e.clientY,last:p,moved:false,forcePan:panMode||e.button!==0,type:e.pointerType};
+});
+canvas.addEventListener('pointermove',e=>{
+ const p=screenPoint(e);renderDirty=true;if(pointers.has(e.pointerId))pointers.set(e.pointerId,{clientX:e.clientX,clientY:e.clientY});
+ if(pointers.size>=2){
+  if(pointers.size!==2||!pinch)return;
+  const pair=touchPair();
+  if(!pinch.active&&Math.hypot(pair.clientX-pinch.clientX,pair.clientY-pinch.clientY)<10&&Math.abs(pair.distance-pinch.distance)<10)return;
+  pinch.active=true;const start=screenPoint(pinch),center=screenPoint(pair),old=pinch.view;
+  view.zoom=Math.max(1,Math.min(3,old.zoom*pair.distance/Math.max(1,pinch.distance)));
+  view.x=center.x-(start.x-old.x)*view.zoom/old.zoom;view.y=center.y-(start.y-old.y)*view.zoom/old.zoom;clampView();return;
+ }
+ if(gesture?.id===e.pointerId){
+  const moved=Math.hypot(e.clientX-gesture.startClientX,e.clientY-gesture.startClientY)>(gesture.type==='touch'?10:6);
+  if(!gesture.moved&&moved){gesture.moved=true;gesture.last=p;pending=null;hover=null;refreshPlacement()}
+  if(gesture.moved&&gesture.forcePan){view.x+=p.x-gesture.last.x;view.y+=p.y-gesture.last.y;clampView();hover=null}
+  gesture.last=p;
+ }else if(e.pointerType!=='touch'){hover=pointer(e);refreshPlacement()}
+});
+canvas.addEventListener('pointerup',e=>{pointers.delete(e.pointerId);pinch=null;const g=gesture;gesture=null;if(!g||g.id!==e.pointerId||g.forcePan)return;cursor=pointer(e);if(g.moved)return;hover={...cursor};if(marking){markEnemyAt(e);return}if(editSession){handleEditTap(cursor.x,cursor.y);return}const old=structureAt(cursor.x,cursor.y);if(e.pointerType==='touch'&&(!old||selected===-1)){pending={...cursor};focused=null;inspect();refreshPlacement()}else{place(cursor.x,cursor.y);pending=null;refreshPlacement()}});
+function cancelGesture(e){renderDirty=true;pointers.delete(e.pointerId);gesture=null;pinch=null}
+canvas.addEventListener('pointercancel',cancelGesture);canvas.addEventListener('lostpointercapture',cancelGesture);
+window.addEventListener('blur',()=>{pointers.clear();gesture=null;pinch=null});
+canvas.addEventListener('pointerleave',()=>{if(!gesture){hover=null;refreshPlacement()}});
+$('#confirmPlace').onclick=()=>{if(!pending)return;place(pending.x,pending.y);pending=null;hover=null;refreshPlacement()};$('#cancelPlace').onclick=()=>{pending=null;hover=null;refreshPlacement()};
+$('#panMode').onclick=()=>{panMode=true;pending=null;hover=null;syncModes()};$('#buildMode').onclick=()=>{panMode=false;if(selected===null||selected===-1)choose(0);if(mobileLayout()){document.body.classList.add('build-open');$('#mobileBay').setAttribute('aria-expanded','true')}syncModes()};
+$('#exitFocus').onclick=()=>$('#focusMode').click();
+$('#zoomIn').onclick=()=>zoomAt(1.25);$('#zoomOut').onclick=()=>zoomAt(.8);$('#fitView').onclick=()=>{view={zoom:1,x:0,y:0};clampView()};
+$('#focusMode').onclick=()=>{const on=document.body.classList.toggle('focus-game');$('#focusMode').textContent=on?'Exit expanded view':'Expand ↗';$('#exitFocus').hidden=!on;};
+$('#sellSelected').onclick=()=>{const b=buildings.get(focused);if(!b)return;const previous=selected;selected=-1;place(b.x,b.y);choose(previous)};
+function explode(x,y,big){bursts.push({x,y,life:big?.85:.5,max:big?.85:.5,r:big?48:25});scorches.push({x,y,r:big?23:13});if(scorches.length>60)scorches.shift();for(let i=0;i<($('#reduced').checked?0:batterySaving()?(big?6:3):big?22:10);i++){const a=Math.random()*Math.PI*2,v=25+Math.random()*90;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.3+Math.random()*.6,max:.9,color:i%3?'#ffbd64':'#a1b0ba'})}if(particles.length>300)particles.splice(0,particles.length-300)}
+
+function invalidate(){occupancyCache=null;fieldCache=null;routeCache.clear();previewCache=null;}
+function field(style='direct'){
+ if(routeCache.has(style))return routeCache.get(style);
+ const dist=Array(W*H).fill(Infinity),cost=Array(W*H).fill(1),done=new Set();dist[key(exit.x,exit.y)]=0;
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(style!=='direct')for(const b of buildings.values()){const t=types[b.type];if(t.rate&&t.range&&b.type!==7&&Math.hypot(x+.5-centerX(b),y+.5-centerY(b))<=t.range+(b.level-1)*.25)cost[key(x,y)]+=Math.min(2,t.damage/t.rate/55)*(style==='cautious'?1.8:.45)}
+ for(let n=0;n<W*H;n++){let k=-1;for(let j=0;j<dist.length;j++)if(!done.has(j)&&(k<0||dist[j]<dist[k]))k=j;if(k<0||!isFinite(dist[k]))break;done.add(k);const x=k%W,y=Math.floor(k/W);for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]]){const nx=x+dx,ny=y+dy,j=key(nx,ny);if(nx<0||nx>=W||ny<0||ny>=H||blocked(j)||blocked(k))continue;if(dx&&dy&&(blocked(key(x+dx,y))||blocked(key(x,y+dy))))continue;const d=dist[k]+Math.hypot(dx,dy)*(cost[k]+cost[j])/2;if(d<dist[j])dist[j]=d}}
+ const result={dist,cost};routeCache.set(style,result);return result;
+}
+function route(sx=0,sy=entrance.y,style='direct'){
+ const {dist,cost}=field(style);if(!isFinite(dist[key(sx,sy)]))return null;const path=[{x:sx,y:sy}];let x=sx,y=sy;
+ for(let n=0;n<W*H&&(x!==exit.x||y!==exit.y);n++){let best=null,score=Infinity;for(const [dx,dy] of [[1,0],[0,-1],[0,1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]){const nx=x+dx,ny=y+dy;if(nx<0||nx>=W||ny<0||ny>=H||blocked(key(nx,ny)))continue;if(dx&&dy&&(blocked(key(x+dx,y))||blocked(key(x,y+dy))))continue;const v=dist[key(nx,ny)]+Math.hypot(dx,dy)*(cost[key(x,y)]+cost[key(nx,ny)])/2;if(v<score-1e-8&&dist[key(nx,ny)]<dist[key(x,y)]){score=v;best={x:nx,y:ny}}}if(!best)return null;path.push(best);x=best.x;y=best.y}return path;
+}
+function reset(){editSession=null;editApplying=false;editQueued=false;marking=false;markedEnemy=null;overdriveTime=0;overdriveUsed=false;configureField();if(typeof checkpointReset==='function')checkpointReset();if(typeof view!=='undefined'){view.zoom=1;view.x=0;view.y=0;pending=null;previewCache=null;particles=[];scorches=[];projectiles=[];bursts=[];autoTime=0;bannerTime=0;$('#waveBanner').hidden=true;clampView();}buildings=new Map();addTerrain();invalidate();focused=null;empUsed=false;enemies=[];effects=[];gold=40000;health=20;wave=0;perfectStreak=0;active=false;paused=false;speed=1;spawnLeft=0;spawnTimer=0;ended=false;kills=0;$('#overlay').hidden=true;$('#pause').textContent='Pause';$('#speed').textContent='1× Speed';say('Choose a defense, then click an empty tile to build.');update()}
+function say(s){$('#message').textContent=s}
+function choose(i){selected=i;focused=null;pending=null;hover=null;previewCache=null;panMode=false;syncModes();inspect();document.querySelectorAll('.card').forEach((b,j)=>b.classList.toggle('active',shopTypes[j]===i));$('#sell').classList.toggle('active',i===-1);marking=false;if(editSession){if(i!==null&&i>=0){editTool='build';editSession.placeType=i;}if(typeof syncSystems==='function')syncSystems();}}
+function place(x,y){if(editSession&&!editApplying)return editAction(()=>place(x,y));if(ended)return;let k=key(x,y);const old=structureAt(x,y);if(old)k=key(old.x,old.y);if(old?.terrain){say('Fixed terrain. Build your maze around it.');return}if(selected===-1){if(old){const proceeds=typeof saleQuote==='function'?saleQuote(old).refund:refund(old);gold+=proceeds;buildings.delete(k);invalidate();focused=null;say((editSession?'Pending removal: ':'Sold ')+types[old.type].name+' · +$'+proceeds.toLocaleString()+(editSession?' · Confirm batch to apply.':' (70% resale).'))}else say('Choose a tower or wall to sell.');update();if(typeof saveCheckpoint==='function')saveCheckpoint();return}if(old){focused=k;inspect();say(types[old.type].name+' selected.');return}if(selected===null){focused=null;hover=null;inspect();return}const reason=areaReason(x,y,selected);if(reason){say(reason);return}if(x===0||x===W-1){say('Keep the entrance and core edges clear.');return}if(enemies.some(e=>!e.flying&&((Math.floor(e.x)===x&&Math.floor(e.y)===y)||(e.target&&((e.target.x===x&&e.target.y===y)||(e.target.x!==Math.floor(e.x)&&e.target.y!==Math.floor(e.y)&&((x===e.target.x&&y===Math.floor(e.y))||(y===e.target.y&&x===Math.floor(e.x))))))))){say('An enemy is crossing that tile. Try another.');return}const t=types[selected];if(gold<t.cost){say('Insufficient funds. Defeat enemies or sell a defense.');return}buildings.set(k,{x,y,type:selected,span:types[selected].size||1,cool:0,angle:0,level:1,invested:t.cost,targeting:'first',...(editSession?{draftId:'new:'+editSession.nextId++}:{})});invalidate();if(hubRows.some(y=>!route(0,y))||enemies.some(e=>!e.flying&&!route(Math.floor(e.x),Math.floor(e.y)))){buildings.delete(k);invalidate();say('Leave a path open! The intruders need a route to the core.');return}gold-=t.cost;bursts.push({x:(x+.5)*S,y:(y+.5)*S,life:.5,max:.5,r:30,build:true});sfx('build');focused=k;inspect();say(t.name+' deployed.');update();if(typeof saveCheckpoint==='function')saveCheckpoint()}
+function queueNextWave(){if(editSession)return;if(editQueued&&!active&&!ended){beginEdit();return}if(autoWave&&!active&&!ended&&wave>0)autoTime=5}
+function syncAuto(){const button=$('#auto');button.textContent='Auto-play: '+(autoWave?'on':'off');button.classList.toggle('active',autoWave);button.setAttribute('aria-pressed',String(autoWave));$('#roundHint').textContent=ended?'Mission complete.':paused?'Paused · Tap Resume to continue.':autoTime>0?'Next wave in '+Math.ceil(autoTime)+'s · Building is optional.':autoWave?(wave===0?'Launch once. Following waves start automatically.':'Waves continue automatically. Build whenever you like.'):'Manual waves · Tap Launch when ready.'}
+function start(){if(editSession){finishEdit(true);return}if(active||ended)return;if(typeof saveCheckpoint==='function')saveCheckpoint();autoTime=0;banner('INCOMING','WAVE '+String(wave+1).padStart(2,'0'),wave%5===4?'Heavy contact. Prepare for a boss.':'Hold every breach point. Protect the core.');sfx('wave');wave++;waveHealth=health;empUsed=false;overdriveUsed=false;overdriveTime=0;markedEnemy=null;marking=false;active=true;paused=false;$('#pause').textContent='Pause';spawnLeft=7+wave*2;spawnTimer=0;say('Wave '+wave+' incoming. You can keep building during battle.');update()}
+function update(){renderDirty=true;$('#sell').classList.toggle('active',selected===-1);inspect();syncMobile();syncAuto();refreshPlacement();document.querySelectorAll('.card').forEach((b,i)=>{b.classList.toggle('active',selected===shopTypes[i]);b.classList.toggle('unaffordable',gold<types[shopTypes[i]].cost);b.setAttribute('aria-pressed',String(selected===shopTypes[i]))}); $('#record').textContent='BEST WAVE '+bestWave+' / FLAWLESS STREAK '+perfectStreak;$('#gold').textContent='$'+gold.toLocaleString();$('#health').innerHTML=health+' <span>/ 20</span>';$('#healthFill').style.width=health/20*100+'%';$('#healthFill').style.background=health<=5?'#e48e77':'var(--accent)';$('#wave').innerHTML=String(wave).padStart(2,'0')+' <span>/ '+($('#endless').checked?'∞':'20')+'</span>';$('#phase').textContent=ended?(health>0?'Core saved':'Core lost'):paused?'Paused':active?'In combat':autoTime>0?'Next in '+Math.ceil(autoTime)+'s':'Ready';$('#start').disabled=active||ended;$('#start').style.opacity=active||ended?.5:1;$('#start').innerHTML=active?'Wave '+String(wave).padStart(2,'0')+' active':autoTime>0?'Next wave in '+Math.ceil(autoTime)+'s':'Launch wave '+String(wave+1).padStart(2,'0')+' <span>→</span>';$('#remaining').textContent=active?(spawnLeft+enemies.length)+' enemies remaining':wave?'Wave cleared · Building is optional':'Plan your first defense';if(typeof syncSystems==='function')syncSystems();}
+function finish(win){overdriveTime=0;markedEnemy=null;marking=false;editQueued=false;if(typeof checkpointReset==='function')checkpointReset();bannerTime=0;$('#waveBanner').hidden=true;sfx(win?'clear':'loss');ended=true;active=false;autoTime=0;$('#overlay').hidden=false;$('#overlay').innerHTML=(win?'Core protected!':'The intruders got through.')+'<small>'+ (win?'All 20 waves survived.':'Reached wave '+wave+'. Adjust your maze and try again.')+'</small><button onclick="reset()" style="margin-top:20px">Play again ↻</button>';update()}
+function tick(dt){if(paused||ended||!active||editSession)return;overdriveTime=Math.max(0,overdriveTime-dt);if(markedEnemy?.hp<=0||markedEnemy&&!enemies.includes(markedEnemy))markedEnemy=null;for(const p of projectiles){p.elapsed+=dt;if(!p.hit&&p.elapsed>=p.duration){p.hit=true;resolveShot(p)}}projectiles=projectiles.filter(p=>p.elapsed<p.duration+.12);spawnTimer-=dt;if(spawnLeft>0&&spawnTimer<=0){const boss=wave%5===0&&spawnLeft===1,fast=!boss&&spawnLeft%4===0,max=(30+wave*13)*Math.pow(1.07,Math.max(0,wave-5))*(boss?7:fast?.7:1);const flying=wave>=3&&spawnLeft%5===0&&!boss&&$('#air').checked,armored=wave>=4&&spawnLeft%3===0&&!boss&&!flying,shieldCarrier=wave>=7&&spawnLeft%7===0&&!boss&&!flying;enemies.push({shieldCarrier,emp:0,flying,armored,x:.5,y:hubRows[spawnLeft%hubRows.length]+.5,style:boss?'direct':fast?'cautious':'balanced',hp:max*difficulty()*(armored?1.5:1),max:max*difficulty()*(armored?1.5:1),speed:boss?.65:shieldCarrier?.8:fast?1.6:1,slow:0,boss,fast,target:null});spawnLeft--;spawnTimer=.7}
+for(const e of enemies){e.hit=Math.max(0,(e.hit||0)-dt);e.emp=Math.max(0,(e.emp||0)-dt);e.slow=Math.max(0,e.slow-dt);let move=dt*e.speed*Math.min(e.slow>0?.45:1,cryoFactor(e));while(move>0&&e.hp>0){if(Math.abs(e.x-exit.x-.5)<.001&&Math.abs(e.y-exit.y-.5)<.001){e.hp=0;health=Math.max(0,health-(e.boss?4:1));if(health===0){finish(false);return}break}if(e.flying&&!e.target)e.target={...exit};if(!e.target){const path=route(Math.floor(e.x),Math.floor(e.y),e.style);if(!path){move=0;break}if(path.length<2){e.hp=0;health=Math.max(0,health-(e.boss?4:1));if(health===0){finish(false);return}break}e.target=path[1]}const dx=e.target.x+.5-e.x,dy=e.target.y+.5-e.y,d=Math.hypot(dx,dy);if(move>=d){e.x=e.target.x+.5;e.y=e.target.y+.5;move-=d;e.target=null}else{e.x+=dx/d*move;e.y+=dy/d*move;move=0}}}
+for(const b of buildings.values()){const t=types[b.type];if(!t.range||!t.rate)continue;b.cool-=dt*(overdriveTime>0?2:1)*(1+relayBonus(b));if(b.cool>0)continue;const target=pickTarget(b);if(!target)continue;b.cool=t.rate/(1+(b.level-1)*.15);b.flash=.13;b.angle=Math.atan2(target.y-centerY(b),target.x-centerX(b));fire(b,target);}enemies=enemies.filter(e=>e.hp>0);if(!spawnLeft&&!enemies.length){active=false;overdriveTime=0;markedEnemy=null;marking=false;projectiles=[];perfectStreak=health===waveHealth?perfectStreak+1:0;const bonus=perfectStreak?Math.min(3,perfectStreak)*2000:0;gold+=bonus;bestWave=Math.max(bestWave,wave);try{localStorage.setItem('grid-best',bestWave)}catch{}gold+=4000+Math.floor(wave/5)*2000;say('Wave '+wave+' cleared! +'+(4000+Math.floor(wave/5)*2000)+' base reward'+(bonus?' + $'+bonus+' flawless bonus!':'')+'. '+(autoWave?'Next wave starts automatically.':'Launch the next wave when ready.'));if(wave>=20&&!$('#endless').checked)finish(true);else{banner(perfectStreak?'FLAWLESS DEFENSE':'SECTOR SECURED','WAVE '+String(wave).padStart(2,'0')+' CLEAR',bonus?'Streak bonus +$'+bonus.toLocaleString():'Rearm. The next assault is waiting.');sfx('clear');if(typeof saveCheckpoint==='function')saveCheckpoint();queueNextWave();update();}}hudTime+=dt;if(hudTime>.1&&!steppingFrame){update();hudTime=0}}
+function circle(x,y,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+function metal(x,y,w,h,light='#647586',dark='#18212e'){const g=ctx.createLinearGradient(x,y,x+w,y+h);g.addColorStop(0,light);g.addColorStop(.35,light);g.addColorStop(.55,dark);g.addColorStop(1,dark);ctx.fillStyle=g;ctx.fillRect(x,y,w,h);ctx.strokeStyle='#91a2af55';ctx.lineWidth=.7;ctx.strokeRect(x+.5,y+.5,w-1,h-1)}
+function configureField(){W=$('#size').value==='compact'?20:28;H=W===20?11:15;WORLD_W=W*S;WORLD_H=H*S;const count=$('#hubs').value==='5'?5:3;hubRows=Array.from({length:count},(_,i)=>1+i*(H-3)/(count-1));entrance={x:0,y:(H-1)/2};exit={x:W-1,y:(H-1)/2};canvas.width=WORLD_W;canvas.height=WORLD_H;if(canvas.style)canvas.style.aspectRatio=W+'/'+H;if(document.documentElement)document.documentElement.style.setProperty('--board-ratio',String(W/H));if(typeof resizeBoardBacking==='function')resizeBoardBacking();}
+function addTerrain(){const map=$('#map').value,a=Math.round(W*.32),b=Math.round(W*.66),mid=(H-1)/2,blocks=[];if(map==='alleys'){for(let y=1;y<H-1;y++)if(Math.abs(y-mid)>1)blocks.push([a,y]);for(let y=2;y<H-2;y++)if(y!==mid)blocks.push([b,y])}else if(map==='islands'){for(const x of [a,a+1])for(const off of [-4,-3,3,4])blocks.push([x,mid+off]);for(const x of [b,b+1])for(const off of [-1,1])blocks.push([x,mid+off])}for(const [x,y] of blocks)buildings.set(key(x,y),{x,y,type:3,level:1,invested:0,terrain:true})}
+let chosenMap='open',chosenSize='expanded',chosenHubs='3';function changeSetup(){if(wave>0)return;if([...buildings.values()].some(b=>!b.terrain)&&!confirm('Changing the battlefield resets this build and its funds. Continue?')){$('#map').value=chosenMap;$('#size').value=chosenSize;$('#hubs').value=chosenHubs;return}chosenMap=$('#map').value;chosenSize=$('#size').value;chosenHubs=$('#hubs').value;reset()}
+$('#map').onchange=changeSetup;$('#size').onchange=changeSetup;$('#hubs').onchange=changeSetup;
+function remaining(e){return e.flying?Math.hypot(exit.x+.5-e.x,exit.y+.5-e.y):field().dist[key(Math.floor(e.x),Math.floor(e.y))]}
+function refund(b){return Math.floor(b.invested*70/100)}
+function difficulty(){return Number($('#difficulty').value)||1}
+function syncMobile(){$('#mobileBay').setAttribute('aria-expanded',String(document.body.classList.contains('build-open')));$('#mobileStart').textContent=active?'Wave '+String(wave).padStart(2,'0')+' active':autoTime>0?'Next in '+Math.ceil(autoTime)+'s':'Launch wave '+String(wave+1).padStart(2,'0');$('#mobileStart').disabled=active||ended;$('#mobilePause').disabled=ended||(!active&&autoTime<=0);$('#mobilePause').textContent=paused?'Resume':'Pause';$('#mobileSpeed').textContent=speed+'×';const b=buildings?.get(focused);$('#mobileSelected').textContent=b?types[b.type].name+' · Level '+b.level:selected>=0&&selected!==null?types[selected].name+' · $'+types[selected].cost.toLocaleString():selected===-1?'Sell mode · 70% resale':'Tap a system to deploy';}
+function targetMode(b){return b?.targeting==='strongest'?'strongest':'first'}
+function targetHelpText(b){
+ if(active&&markedEnemy?.hp>0)return 'Focus fire: marked enemy first, if this gun can hit it within range. Otherwise: '+(targetMode(b)==='strongest'?'Most health.':'Closest to core.');
+ if(targetMode(b)==='strongest')return 'Shoots the enemy with the most health left in range. '+(b?.type===7?'Wears down tougher drones; use Closest to core if drones slip past.':b?.type===2?'Keeps tough ground enemies slowed; use Closest to core to stop escapes.':b?.type===1?'Centers splash on tougher ground enemies. Keep another gun on Closest to core.':b?.type===5?'Chains from a tough ground enemy to nearby troops. Keep another gun on Closest to core.':'Good for tanks and bosses; keep another gun on Closest to core to catch escapes.');
+ return b?.type===4?'Stops escapes. Try Most health on this Rail battery for tanks and bosses.':b?.type===2?'Slows ground enemies near your core. A safe default.':b?.type===7?'Stops escaping drones. Only targets drones in range.':'Stops escapes. The safe default; only enemies in range.';
+}
+function pickTarget(b){
+ const t=types[b.type];if(!t.range||!t.rate)return null;
+ const range=t.range+(b.level-1)*.25,mode=targetMode(b),kind=targetKinds[b.type];let target=null,best=mode==='strongest'?-Infinity:Infinity;
+ if(markedEnemy?.hp>0&&enemies.includes(markedEnemy)&&(kind==='both'||kind==='air'&&markedEnemy.flying||kind==='ground'&&!markedEnemy.flying)&&Math.hypot(markedEnemy.x-centerX(b),markedEnemy.y-centerY(b))<=range)return markedEnemy;
+ for(const e of enemies){if(e.hp<=0||(kind==='air'?!e.flying:kind==='ground'&&e.flying)||Math.hypot(e.x-centerX(b),e.y-centerY(b))>range)continue;
+  const score=mode==='strongest'?e.hp:remaining(e);if(mode==='strongest'?score>best:score<best){target=e;best=score}
+ }
+ return target;
+}
+function syncTowerActions(b){
+ const panel=$('#towerActions');panel.hidden=!b||b.terrain;document.body.classList.toggle('has-tower',!panel.hidden);
+ $('#aimLegend').textContent=!panel.hidden&&b.type!==3?'Ring = range · Brackets = priority target':'Choose a weapon. Shape the route.';
+ if(panel.hidden)return;
+ const t=types[b.type],wall=b.type===3,max=b.level>=3,cost=t.cost*b.level/2;
+ $('#quickTitle').textContent=b.type===2?'Legacy Cryo node · 1×1':b.type===4&&spanOf(b)===1?'Legacy railgun · 1×1':t.name;
+ $('#quickLevel').textContent=wall?'Wall':upgradeNames[b.level-1];
+ $('#quickLevel').dataset.level=String(b.level);
+ $('#quickUpgrade').disabled=ended||wall||max||gold<cost;
+ $('#quickUpgrade').textContent=wall?'No upgrades':max?'Maximum level':'Upgrade · $'+cost.toLocaleString();
+ $('#quickTarget').hidden=wall||b.type>=8;
+ document.querySelectorAll('[data-priority]').forEach(button=>{button.disabled=ended;button.setAttribute('aria-pressed',String(button.dataset.priority===targetMode(b)))});
+ $('#quickTargetHelp').hidden=wall||b.type>=8;$('#quickTargetHelp').textContent=targetHelpText(b);
+ $('#quickBenefit').textContent=wall?'Redirects ground troops. Drones fly over walls.':max?'Fully upgraded.':'+'+Math.round(65/(1+(b.level-1)*.65))+'% damage · more range · faster fire'+(gold<cost?' · Need $'+(cost-gold).toLocaleString()+' more':'');
+}
+function inspect(){renderDirty=true;const b=buildings?.get(focused),i=b?b.type:selected>=0&&selected!==null?selected:0,t=types[i],level=b?.level||1,cost=t.cost*level/2;syncTowerActions(b);syncMobile();$('#unitLevel').textContent=i===3?'Wall · No upgrades':b?upgradeNames[level-1]+' · Level '+level+' / 3': 'Starts at level 1 · Maximum 3';$('#unitLevel').dataset.level=String(level);const targetKind=targetKinds[i],guide=b||selected!==null&&selected>=0?t.name+' · '+targetNotes[targetKind]:selected===-1?'Sell mode · Recover 70% of your investment.':'Choose a defense to see what it can hit.';if($('#weaponGuide').textContent!==guide)$('#weaponGuide').textContent=guide;$('#unitTitle').textContent=b?.type===2?'Legacy Cryo node · 1×1':b?.type===4&&spanOf(b)===1?'Legacy railgun · 1×1':t.name;$('#unitCode').textContent=['P-01','M-02','C-03','W-04','R-05','T-06','G-07','A-08'][i]+(b?' / DEPLOYED':' / BLUEPRINT');$('#upgrade').disabled=ended||!b||i===3||level>=3||gold<cost;$('#upgrade').textContent=i===3?'No upgrades':level>=3?'Fully upgraded':b?'Upgrade · $'+cost.toLocaleString():'Place on battlefield';$('#target').disabled=!b||i===3;$('#target').value=targetMode(b);$('#targetHelp').hidden=i===3;$('#targetHelp').textContent=targetHelpText(b);$('#sellSelected').disabled=!b||b.terrain;$('#sellSelected').textContent=b?(typeof saleQuote==='function'&&saleQuote(b).isNew?'Cancel build · $':'Sell · $')+(typeof saleQuote==='function'?saleQuote(b).refund:refund(b)).toLocaleString():'Sell';$('#inspect').textContent=b?'LEVEL '+level+' / INVESTED $'+b.invested.toLocaleString():'DEPLOYMENT COST / $'+t.cost.toLocaleString();$('#towerStats').textContent=i===3?'MAZE CONTROL / GROUND BLOCKER':'DMG '+Math.round(t.damage*(1+(level-1)*.65))+'  ·  RANGE '+(t.range+(level-1)*.25).toFixed(1)+'  ·  '+targetLabels[targetKind].toUpperCase();$('#details').textContent=targetNotes[targetKind]+' '+t.desc+'. '+(i===0?'Chains to two enemies and ignores shields. Armor still reduces damage.':i===4||i===1?'Ignores armor resistance.':i===5?'Arcs to three enemies and bypasses shields.':i===2?'Reduces enemy speed by 55%.':i===3?'Reshape the route. Keep all gates connected.':'70% of total investment recovered when sold.');if($('#target').parentElement)$('#target').parentElement.hidden=i>=8;if(i>=8){$('#target').disabled=true;$('#targetHelp').textContent=targetNotes[targetKind];$('#details').textContent=targetNotes[targetKind];$('#towerStats').textContent='2×2 footprint · FIELD '+(t.range+(level-1)*.25).toFixed(1);$('#quickBenefit').textContent=i===8?'Nearby guns fire '+(25+(level-1)*10)+'% faster. Relay bonuses do not stack.':'Nearby ground enemies move '+(35+(level-1)*10)+'% slower. Fields do not stack.';}$('#emp').disabled=!active||empUsed||gold<2000;$('#emp').innerHTML='<span>'+(empUsed?'EMP recharging':'EMP pulse')+'</span><b>'+(empUsed?'NEXT WAVE':'$2,000')+'</b>';$('#pause').disabled=ended||(!active&&autoTime<=0);$('#difficulty').disabled=wave>0;$('#map').disabled=wave>0;$('#size').disabled=wave>0;$('#hubs').disabled=wave>0;$('#air').disabled=wave>0;$('#endless').disabled=wave>0;$('#forecast').innerHTML='<b>Wave '+String(wave+1).padStart(2,'0')+'</b> <span>'+ (7+(wave+1)*2)+' hostiles</span><br><small>'+((wave+1)%5===0?'BOSS · ':'')+(wave+1>=7?'SHIELD CARRIERS · ':'')+(wave+1>=4?'ARMOR · ':'')+(wave+1>=3&&$('#air').checked?'AIR · ':'')+'SCOUTS + RUNNERS</small>';}
+function upgradeFocused(){if(editSession&&!(editTool==='upgrade'&&editApplying))return;const b=buildings.get(focused);if(ended||!b||b.type===3||b.level>=3)return;const cost=types[b.type].cost*b.level/2;if(gold<cost){say('Insufficient credits for this upgrade.');return}gold-=cost;b.invested+=cost;b.level++;invalidate();bursts.push({x:(centerX(b))*S,y:(centerY(b))*S,life:.7,max:.7,r:40,build:true});sfx('build');update();say(b.type>=8?'Field upgraded: stronger effect and more range.':'Upgraded: more damage, range and faster fire.');if(typeof saveCheckpoint==='function')saveCheckpoint()}
+$('#upgrade').onclick=upgradeFocused;
+function setAttackPriority(value){if(editSession)return;const b=buildings.get(focused);if(ended||!b||b.terrain||b.type===3||!['first','strongest'].includes(value))return;b.targeting=value;inspect();if(typeof saveCheckpoint==='function')saveCheckpoint()}
+$('#target').onchange=e=>setAttackPriority(e.target.value);
+document.querySelectorAll('[data-priority]').forEach(button=>button.onclick=()=>setAttackPriority(button.dataset.priority));
+$('#quickUpgrade').onclick=()=>$('#upgrade').click();$('#quickDetails').onclick=()=>{if(!document.body.classList.contains('manage-open'))$('#manage').click();$('.extra-stats').open=true};$('#closeTower').onclick=()=>{focused=null;pending=null;hover=null;previewCache=null;inspect();refreshPlacement()};
+
+$('#auto').onclick=()=>{autoWave=!autoWave;try{localStorage.setItem('grid-auto-waves',autoWave?'on':'off')}catch{}if(autoWave)queueNextWave();else{autoTime=0;if(!active)paused=false}update()};
+$('#emp').onclick=()=>{if(!active||empUsed)return;if(gold<2000){say('EMP requires $2,000.');return}gold-=2000;empUsed=true;bursts.push({x:exit.x*S+24,y:exit.y*S+24,life:1.2,max:1.2,r:1000,emp:true});sfx('emp');for(const e of enemies){e.slow=5;e.emp=5};say('EMP fired. Hostiles slowed and shield carriers disabled for 5 seconds.');update()};
+shopTypes.forEach(i=>{const t=types[i];const b=document.createElement('button');b.className='card';b.dataset.type=String(i);b.dataset.footprint=String(t.size||1);b.title=t.name+' — '+targetLabels[targetKinds[i]]+'. '+t.desc;b.innerHTML=(t.size===2?'<span class="size-badge" title="2 by 2 footprint: four tiles"><i aria-hidden="true"><b></b><b></b><b></b><b></b></i>2×2</span>':'')+'<span class="hotkey">'+(shopTypes.indexOf(i)+1)+'</span><canvas class="model-thumb" width="140" height="100" aria-hidden="true"></canvas><span class="card-text"><b>'+t.name+'</b><small class="weapon-role">'+weaponRoles[i]+'</small><span class="target-badge target-'+targetKinds[i]+'">'+targetLabels[targetKinds[i]]+'</span></span><span class="price">$'+t.cost.toLocaleString()+'</span>';b.onclick=()=>{choose(i);sfx('select')};$('#shop').append(b)});
+$('#mobileStart').onclick=()=>$('#start').click();$('#mobilePause').onclick=()=>$('#pause').click();$('#mobileSpeed').onclick=()=>{$('#speed').click();syncMobile()};$('#mobileBay').onclick=()=>{document.body.classList.toggle('build-open');$('#mobileBay').setAttribute('aria-expanded',String(document.body.classList.contains('build-open')))};$('#mobileMore').onclick=()=>$('#manage').click();$('#manage').onclick=()=>{document.body.classList.toggle('manage-open');if(document.body.classList.contains('manage-open'))$('#management').scrollIntoView({behavior:$('#reduced').checked?'auto':'smooth',block:'start'})};$('#closeManage').onclick=()=>document.body.classList.remove('manage-open');
+function drawerGestures(handleId,panelId,close){
+ const handle=$(handleId),panel=$(panelId);let drag=null;
+ handle.onclick=close;
+ handle.addEventListener('pointerdown',e=>{drag={id:e.pointerId,x:e.clientX,y:e.clientY};handle.setPointerCapture(e.pointerId)});
+ handle.addEventListener('pointermove',e=>{if(drag?.id===e.pointerId&&e.clientY>drag.y)panel.style.transform='translateY('+Math.min(120,e.clientY-drag.y)+'px)'});
+ handle.addEventListener('pointerup',e=>{const g=drag;drag=null;panel.style.transform='';if(g&&g.id===e.pointerId&&e.clientY-g.y>35&&e.clientY-g.y>Math.abs(e.clientX-g.x))close()});
+ handle.addEventListener('pointercancel',()=>{drag=null;panel.style.transform=''});
+}
+drawerGestures('#buildGrip','#shop',()=>{document.body.classList.remove('build-open');$('#mobileBay').setAttribute('aria-expanded','false')});
+drawerGestures('#manageGrip','#management',()=>document.body.classList.remove('manage-open'));
+window.addEventListener('resize',()=>{pointers.clear();gesture=null;pinch=null});
+$('#sell').onclick=()=>choose(-1);$('#start').onclick=start;$('#pause').onclick=()=>{if(ended||(!active&&autoTime<=0))return;paused=!paused;if(paused)$('#waveBanner').hidden=true;$('#pause').textContent=paused?'Resume':'Pause';update()};$('#speed').onclick=()=>{speed=speed===3?1:speed+1;$('#speed').textContent=speed+'× Speed';syncMobile()};$('#restart').onclick=()=>{if(!confirm('Reset this run? This clears your towers and current progress and restarts with $40,000.'))return;reset();choose(0);document.body.classList.remove('manage-open');document.body.classList.add('build-open')};$('#help').onclick=()=>{$('#instructions').showModal();if((active||autoTime>0)&&!paused)$('#pause').click()};$('#closeHelp').onclick=()=>$('#instructions').close();document.addEventListener('keydown',e=>{if($('#instructions').open||$('#saleDialog').open||['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;if(e.key>='1'&&e.key<=String(shopTypes.length))choose(shopTypes[Number(e.key)-1]);if(e.key.toLowerCase()==='s')$('#sell').click();if(e.key==='Escape'&&(editSession||marking)){marking=false;pending=null;hover=null;update();return}if(e.key==='Escape'){document.body.classList.remove('manage-open','build-open');choose(null);focused=null;refreshPlacement()}if(e.key.toLowerCase()==='b')$('#buildMode').click();if(e.key.toLowerCase()==='p')$('#pause').click();if(e.key.toLowerCase()==='h')$('#panMode').click();if(e.code==='Space'&&e.target===document.body||e.code==='Space'&&e.target===canvas){e.preventDefault();start()}if(document.activeElement===canvas){if(e.key.startsWith('Arrow')){e.preventDefault();cursor.x=Math.max(0,Math.min(W-1,cursor.x+(e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0)));cursor.y=Math.max(0,Math.min(H-1,cursor.y+(e.key==='ArrowDown'?1:e.key==='ArrowUp'?-1:0)));hover={...cursor};revealCursor();refreshPlacement()}if(e.key==='Enter'&&!e.ctrlKey&&!e.metaKey){e.preventDefault();if(editSession)handleEditTap(cursor.x,cursor.y);else if(!marking)place(cursor.x,cursor.y)}}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&(active||autoTime>0)&&!paused){paused=true;$('#pause').textContent='Resume';say('Paused while you were away.');update()}});
+$('#air').onchange=update;$('#endless').onchange=update;reset();choose(0);
+let last=performance.now(),lastPaint=0,uiElapsed=0;
+function frame(now){
+ requestAnimationFrame(frame);
+ if(document.hidden){last=now;return}
+ const interval=1000/(batterySaving()?30:60);if(now-lastPaint<interval-.5)return;
+ const dt=Math.min((now-last)/1000,.1);last=now;lastPaint=now;
+ if(!paused)renderClock+=dt;
+ const visualAnimation=!paused&&(active||bannerTime>0||bursts.length||effects.length||particles.length);
+ const animate=visualAnimation||!paused&&autoTime>0;
+ if(!animate&&!renderDirty)return;
+ // Keep combat steps independent of display rate, including rapid guns at 3× speed.
+ steppingFrame=true;try{let elapsed=dt*speed;while(elapsed>1e-7){const step=Math.min(1/60,elapsed);tick(step);elapsed-=step}}finally{steppingFrame=false}
+ uiElapsed+=dt;if(active&&!paused&&uiElapsed>=.1){uiElapsed%=.1;hudTime=0;update()}
+ if(!paused){
+  if(bannerTime>0){bannerTime=Math.max(0,bannerTime-dt);if(!bannerTime)$('#waveBanner').hidden=true}
+  if(!active&&!ended&&autoTime>0){const previous=Math.ceil(autoTime);autoTime=Math.max(0,autoTime-dt);if(autoTime===0)start();else if(Math.ceil(autoTime)!==previous)update()}
+  bursts=bursts.filter(b=>(b.life-=dt)>0);effects=effects.filter(f=>(f.life-=dt)>0);
+  particles=particles.filter(f=>{f.life-=dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.vx*=.97;f.vy*=.97;return f.life>0});
+  for(const b of buildings.values()){b.flash=Math.max(0,(b.flash||0)-dt);const target=b.angle||0,diff=Math.atan2(Math.sin(target-(b.renderAngle??target)),Math.cos(target-(b.renderAngle??target)));b.renderAngle=(b.renderAngle??target)+diff*Math.min(1,dt*18)}
+  for(const e of enemies){if(e.target){const desired=Math.atan2(e.target.y+.5-e.y,e.target.x+.5-e.x),diff=Math.atan2(Math.sin(desired-(e.heading??desired)),Math.cos(desired-(e.heading??desired)));e.heading=(e.heading??desired)+diff*Math.min(1,dt*12)}}
+ }
+ if(typeof draw==='function'&&(renderDirty||visualAnimation))draw();renderDirty=false;
+}
+requestAnimationFrame(frame);
+
+function banner(label,title,text){$('#bannerLabel').textContent=label;$('#bannerTitle').textContent=title;$('#bannerText').textContent=text;$('#waveBanner').hidden=false;bannerTime=2.3;}
+function fire(b,target){const t=types[b.type],duration=b.type===1?.5:b.type===7?.3:b.type===4||b.type===5?0:.14;const p={x:centerX(b),y:centerY(b),tx:target.x,ty:target.y,target,type:b.type,color:t.color,damage:t.damage*(1+(b.level-1)*.65),elapsed:0,duration,hit:false};if(duration===0){p.hit=true;resolveShot(p);effects.push({...p,life:.19,max:.19})}else projectiles.push(p);sfx(b.type===1?'mortar':b.type===5?'electric':b.type===4?'rail':'shot');}
+function resolveShot(p){const target=p.target;let hit=p.type===0?[target,...enemies.filter(e=>e!==target&&e.hp>0&&Math.hypot(e.x-target.x,e.y-target.y)<1.5).slice(0,1)]:p.type===1?enemies.filter(e=>!e.flying&&Math.hypot(e.x-p.tx,e.y-p.ty)<1.3):p.type===5?[target,...enemies.filter(e=>e!==target&&!e.flying&&e.hp>0&&Math.hypot(e.x-target.x,e.y-target.y)<2).slice(0,2)]:[target];for(const e of hit){if(e.hp<=0)continue;e.hp-=p.damage*(e.armored&&p.type!==1&&p.type!==4?.45:1)*(p.type!==5&&p.type!==0&&isShielded(e)?.65:1);e.hit=.15;e.hitColor=p.type===5?'#d8f5ad':p.type===2?'#9ce4f2':'#f2d5a0';if(p.type===2)e.slow=2;if((p.type===5||p.type===0)&&e!==target)effects.push({x:target.x,y:target.y,tx:e.x,ty:e.y,type:5,color:p.color,life:.19,max:.19});if(e.hp<=0){explode(e.x*S,e.y*S,e.boss);gold+=e.boss?4000:800;kills++;sfx('boom')}}if(p.type===1||p.type===7)bursts.push({x:p.tx*S,y:p.ty*S,life:p.type===1?.6:.3,max:p.type===1?.6:.3,r:p.type===1?55:22});else if(p.type===2)bursts.push({x:p.tx*S,y:p.ty*S,life:.3,max:.3,r:20,ice:true});}
+let audioBus=null,audioUnlock=null;const soundTimes=new Map();
+try{soundOn=localStorage.getItem('grid-sound')==='on'}catch{}
+function syncSound(){$('#sound').textContent=soundOn?'Sound on':'Sound off';$('#sound').setAttribute('aria-pressed',String(soundOn))}
+function unlockSound(){
+ if(!soundOn)return Promise.resolve(false);
+ try{
+  if(!audioCtx||audioCtx.state==='closed'){
+   const AudioEngine=window.AudioContext||window.webkitAudioContext;if(!AudioEngine)return Promise.resolve(false);
+   audioCtx=new AudioEngine();audioBus=audioCtx.createDynamicsCompressor();audioBus.threshold.value=-16;audioBus.ratio.value=6;audioBus.connect(audioCtx.destination);soundTimes.clear();
+  }
+  if(audioCtx.state==='running')return Promise.resolve(true);
+  if(!audioUnlock)audioUnlock=Promise.resolve(audioCtx.resume()).then(()=>audioCtx.state==='running').catch(()=>false).finally(()=>{audioUnlock=null});
+  return audioUnlock;
+ }catch{return Promise.resolve(false)}
+}
+$('#sound').onclick=async()=>{soundOn=!soundOn;try{localStorage.setItem('grid-sound',soundOn?'on':'off')}catch{}syncSound();if(soundOn&&await unlockSound())sfx('select')};
+document.addEventListener('pointerdown',()=>{if(soundOn)unlockSound()},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&soundOn)unlockSound()});syncSound();
+function sfx(kind){
+ if(!soundOn)return;if(!audioCtx||audioCtx.state!=='running'){unlockSound();return}
+ const now=audioCtx.currentTime,interval=kind==='shot'?.045:kind==='boom'?.06:0;
+ if(now-(soundTimes.get(kind)??-1)<interval)return;soundTimes.set(kind,now);
+ const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.connect(gain);gain.connect(audioBus);
+ const settings={shot:[190,60,.09,.055],mortar:[100,28,.2,.09],rail:[1000,90,.2,.065],electric:[380,80,.18,.065],boom:[80,22,.25,.075],build:[260,740,.14,.065],select:[520,680,.07,.055],wave:[190,500,.4,.065],clear:[440,880,.4,.065],loss:[150,35,.5,.065],emp:[90,650,.6,.07]};
+ const [from,to,duration,volume]=settings[kind]||settings.select;osc.type=['shot','mortar','boom'].includes(kind)?'triangle':'sine';osc.frequency.setValueAtTime(from,now);osc.frequency.exponentialRampToValueAtTime(to,now+duration);gain.gain.setValueAtTime(.001,now);gain.gain.exponentialRampToValueAtTime(volume,now+.008);gain.gain.exponentialRampToValueAtTime(.001,now+duration);osc.onended=()=>{osc.disconnect();gain.disconnect()};osc.start(now);osc.stop(now+duration);
+}
+
+
+function isShielded(e){return !e.flying&&enemies.some(c=>c.shieldCarrier&&c.hp>0&&!(c.emp>0)&&Math.hypot(c.x-e.x,c.y-e.y)<=1.7)}
+</script><script>/* Layout drafts are held between waves; combat commands never change hit eligibility. */
+function draftSnapshot(){return {buildings:[...buildings.values()].map(b=>({...b})),gold,selected,focused}}
+function restoreDraft(s){buildings=new Map(s.buildings.map(b=>[key(b.x,b.y),{...b}]));gold=s.gold;pending=null;hover=null;focused=null;bursts=[];invalidate()}
+function editAction(action){editApplying=true;try{return action()}finally{editApplying=false;syncSystems()}}
+function beginEdit(){
+ if(active||ended||editSession)return;
+ if(typeof saveCheckpoint==='function')saveCheckpoint();
+ let identity=0;for(const b of buildings.values())if(!b.terrain)b.draftId='existing:'+identity++;
+ editSession={original:draftSnapshot(),wasPaused:paused,nextId:0,placeType:selected!==null&&selected>=0?selected:0};editQueued=false;autoTime=0;paused=false;marking=false;markedEnemy=null;pending=null;hover=null;bannerTime=0;$('#waveBanner').hidden=true;
+ choose(editSession.placeType);editTool='build';document.body.classList.add('build-open');say('Batch on. Tap several tiles, then Confirm or Cancel.');update();
+}
+function finishEdit(apply){
+ if(!editSession)return;
+ const draft=editSession;
+ if(apply&&draftLedger().expectedGold!==gold){say('The draft totals do not match. Cancel this batch before continuing.');return}
+ if(apply&&hubRows.some(row=>!route(0,row))){say('Keep every breach connected to the core before confirming.');return}
+ if(!apply)restoreDraft(draft.original);
+ editSession=null;for(const b of buildings.values())delete b.draftId;editQueued=false;pending=null;hover=null;paused=draft.wasPaused;choose(null);
+ syncModes();if(typeof saveCheckpoint==='function')saveCheckpoint();queueNextWave();update();say(apply?'Batch confirmed. '+(wave&&autoWave?'Next wave in five seconds.':'Launch when ready.'):'Batch cancelled. All structures and funds restored.');
+}
+function setEditTool(tool){
+ if(!editSession||!['build','remove','upgrade'].includes(tool))return;
+ if(tool==='build')choose(editSession.placeType);else choose(null);
+ editTool=tool;panMode=false;syncModes();update();
+}
+function handleEditTap(x,y){
+ if(!editSession)return;let id=key(x,y);const b=structureAt(x,y);if(b)id=key(b.x,b.y);
+ if(editTool==='upgrade'){if(!b||b.terrain||b.type===3){say('Tap a weapon tower to upgrade it.');return}if(b.level>=3){say('Already fully upgraded.');return}focused=id;editAction(upgradeFocused);return}
+ if(editTool==='build'){if(!b)place(x,y);else say('Use Remove to mark structures for removal.');return}
+ if(b){if(b.terrain){say('Fixed terrain cannot be removed.');return}editAction(()=>{const previous=selected;selected=-1;place(x,y);selected=previous});focused=null;update();return}
+ const original=editSession.original.buildings.find(o=>!o.terrain&&x>=o.x&&x<o.x+spanOf(o)&&y>=o.y&&y<o.y+spanOf(o));
+ if(!original)return;
+ id=key(original.x,original.y);if(areaCells(original.x,original.y,spanOf(original)).some(c=>structureAt(c.x,c.y))){say('Cancel overlapping placements before keeping this machine.');return}const cost=refund(original);if(gold<cost){say('Cancel a pending placement first, or Cancel the batch to restore everything.');return}
+ buildings.set(id,{...original});invalidate();if(hubRows.some(row=>!route(0,row))){buildings.delete(id);invalidate();say('Keeping that structure would block a route. Cancel the batch to restore everything.');return}
+ gold-=cost;update();say('Removal unmarked. Structure kept.');
+}
+function markEnemyAt(event){
+ const p=screenPoint(event),r=canvas.getBoundingClientRect(),x=(p.x-view.x)/view.zoom/S,y=(p.y-view.y)/view.zoom/S;
+ let best=null,distance=Infinity;for(const e of enemies){if(e.hp<=0)continue;const d=Math.hypot((e.x-x)*S,(e.y-y)*S)*view.zoom*r.width/WORLD_W;if(d<distance){best=e;distance=d}}
+ if(!best||distance>24){say('Tap an enemy on the battlefield, or tap Cancel mark.');return}
+ markedEnemy=best;marking=false;pending=null;hover=null;sfx('select');say('Focus fire: every eligible gun in range will prioritize the marked enemy.');update();
+}
+function syncSystems(){
+ const editing=!!editSession;document.body.classList.toggle('editing',editing);$('#fundsLabel').textContent=editing?'AFTER EDITS':'FUNDS';document.body.classList.toggle('marking',marking);document.body.classList.toggle('overdriving',overdriveTime>0);
+ $('#editPanel').hidden=!editing;$('#editMode').disabled=ended;$('#editMode').setAttribute('aria-pressed',String(editing||editQueued));$('#editMode').innerHTML='<span>'+(editing?'Batch on':editQueued?'Batch queued':active?'Batch next':'Batch')+'</span><small>'+(editing?'WAVE HELD':editQueued?'AFTER THIS WAVE':active?'BETWEEN WAVES':'PLACE · REMOVE')+'</small>';
+ $('#quickEmp').disabled=!active||paused||ended||empUsed||gold<2000;$('#quickEmp').innerHTML='<span>EMP pulse</span><small>'+(empUsed?'USED THIS WAVE':'$2,000 · 5 SEC')+'</small>';
+ $('#overdrive').disabled=!active||paused||ended||overdriveUsed||gold<4000;$('#overdrive').innerHTML='<span>Overdrive</span><small>'+(overdriveTime>0?Math.ceil(overdriveTime)+' SEC · 2× FIRE':overdriveUsed?'USED THIS WAVE':'$4,000 · 6 SEC')+'</small>';
+ $('#markTarget').disabled=!active||ended;$('#markTarget').setAttribute('aria-pressed',String(marking||!!markedEnemy));$('#markTarget').innerHTML='<span>'+(marking?'Cancel mark':markedEnemy?'Clear mark':'Mark enemy')+'</span><small>'+(markedEnemy?'FOCUS FIRE ACTIVE':'FOCUS FIRE · FREE')+'</small>';
+ if(editing){
+  const ledger=draftLedger();$('#editBuild').setAttribute('aria-pressed',String(editTool==='build'));$('#batchRemove').setAttribute('aria-pressed',String(editTool==='remove'));$('#batchUpgrade').setAttribute('aria-pressed',String(editTool==='upgrade'));
+  $('#editSummary').textContent=ledger.newCount+' placed · '+ledger.soldCount+' removed · '+ledger.upgradeCount+' upgraded · −$'+(ledger.builds+ledger.upgrades).toLocaleString()+' / +$'+ledger.sales.toLocaleString()+(ledger.soldCount?' (70% resale)':'')+' · waves held';
+  $('#editConfirm').textContent='Confirm';$('#phase').textContent='Batch on';$('#roundHint').textContent='Confirm or Cancel the batch to continue.';
+  $('#start').disabled=false;$('#start').style.opacity=1;$('#start').textContent='Confirm batch';$('#mobileStart').disabled=false;$('#mobileStart').textContent='Confirm batch';$('#mobilePause').disabled=true;$('#pause').disabled=true;
+  for(const id of ['#size','#hubs','#map','#difficulty','#air','#endless'])$(id).disabled=true;
+ }else if(marking){$('#missionBrief').textContent='Tap an enemy: all eligible guns in range focus it. Free to change.'}
+ else if(overdriveTime>0){$('#missionBrief').textContent='OVERDRIVE · All guns fire 2× faster · '+Math.ceil(overdriveTime)+' seconds left'}
+ else if(markedEnemy){$('#missionBrief').textContent='FOCUS FIRE · Marked '+(markedEnemy.boss?'boss':markedEnemy.flying?'drone':markedEnemy.shieldCarrier?'shield carrier':markedEnemy.armored?'armored enemy':'enemy')+' · '+Math.ceil(markedEnemy.hp)+' health left'}
+ else if(editQueued){$('#missionBrief').textContent='Batch queued. The next wave waits for Confirm or Cancel.'}
+ else if(active){$('#missionBrief').textContent=(spawnLeft+enemies.length)+' enemies left · '+(paused?'Paused — ability timers held':'Build during combat · Abilities recharge each wave')}
+ else{const next=wave+1;$('#missionBrief').textContent=ended?'Mission complete.':('Next: wave '+String(next).padStart(2,'0')+' · '+(next%5===0?'Boss · ':'')+(next>=7?'Shields · ':'')+(next>=4?'Armor · ':'')+(next>=3&&$('#air').checked?'Ground + air':'Ground troops'))}
+ if(marking)$('#aimLegend').textContent='Tap a threat to focus fire';
+}
+
+function saleQuote(b){
+ const original=editSession?.original.buildings.find(o=>o.draftId===b.draftId);
+ if(editSession&&!original)return {refund:b.invested,loss:0,isNew:true,cancelledUpgrades:0};
+ const committed=original||b,extra=original?Math.max(0,b.invested-original.invested):0;
+ return {refund:refund(committed)+extra,loss:committed.invested-refund(committed),isNew:false,cancelledUpgrades:extra};
+}
+function draftLedger(){
+ const original=editSession.original,current=new Map([...buildings.values()].filter(b=>!b.terrain).map(b=>[b.draftId,b])),before=new Map(original.buildings.filter(b=>!b.terrain).map(b=>[b.draftId,b]));
+ let builds=0,upgrades=0,sales=0,loss=0,moves=0,newCount=0,soldCount=0,aimChanges=0,upgradeCount=0;
+ for(const b of current.values()){const old=before.get(b.draftId);if(b.level>(old?.level||1))upgradeCount++;if(!old){newCount++;builds+=types[b.type].cost;upgrades+=b.invested-types[b.type].cost}else{upgrades+=b.invested-old.invested;if(b.x!==old.x||b.y!==old.y)moves++;if(targetMode(b)!==targetMode(old))aimChanges++}}
+ for(const b of before.values())if(!current.has(b.draftId)){soldCount++;sales+=refund(b);loss+=b.invested-refund(b)}
+ return {builds,upgrades,sales,loss,moves,upgradeCount,newCount,soldCount,aimChanges,startingGold:original.gold,expectedGold:original.gold-builds-upgrades+sales};
+}
+let pendingSale=null;
+function askToSell(){
+ const b=buildings.get(focused);if(!b||b.terrain||ended){say('Select a tower first. Use Batch to place or remove several structures.');return}
+ if(editSession)return;
+ const quote=saleQuote(b);pendingSale={b,quote,wasPaused:paused};if(active||autoTime>0)paused=true;
+ $('#saleTitle').textContent='Sell '+types[b.type].name+'?';$('#saleQuote').textContent='Return $'+quote.refund.toLocaleString()+' of $'+b.invested.toLocaleString()+' invested (70%).';$('#saleLoss').textContent='Value lost: $'+quote.loss.toLocaleString()+'. Existing structures return 70% when sold.';$('#confirmSale').textContent='Sell for $'+quote.refund.toLocaleString();update();$('#saleDialog').showModal();
+}
+function closeSale(){if(!pendingSale)return;paused=pendingSale.wasPaused;pendingSale=null;$('#saleDialog').close();$('#pause').textContent=paused?'Resume':'Pause';update()}
+function commitSale(){
+ if(!pendingSale)return;const {b,quote}=pendingSale;
+ if(buildings.get(key(b.x,b.y))!==b||saleQuote(b).refund!==quote.refund){closeSale();say('The selected tower changed. Select it again to sell.');return}
+ selected=-1;place(b.x,b.y);choose(null);closeSale();
+}
+$('#editMode').onclick=()=>{if(ended)return;if(active){editQueued=!editQueued;update()}else if(editSession)finishEdit(true);else beginEdit()};
+$('#editBuild').onclick=()=>setEditTool('build');$('#batchRemove').onclick=()=>setEditTool('remove');$('#batchUpgrade').onclick=()=>setEditTool('upgrade');$('#editCancel').onclick=()=>finishEdit(false);$('#editConfirm').onclick=()=>finishEdit(true);
+$('#quickEmp').onclick=()=>$('#emp').click();
+$('#overdrive').onclick=()=>{if(!active||paused||ended||overdriveUsed||gold<4000)return;gold-=4000;overdriveUsed=true;overdriveTime=6;sfx('emp');say('Overdrive online: all weapons fire twice as fast for six seconds.');update()};
+$('#markTarget').onclick=()=>{if(!active||ended)return;if(markedEnemy||marking){markedEnemy=null;marking=false;say('Focus fire cleared. Guns use their normal aim priorities.')}else{marking=true;panMode=false;pending=null;hover=null;syncModes();say('Tap an enemy to focus fire. No cost.')}update()};
+$('#sellSelected').onclick=askToSell;$('#sell').onclick=askToSell;$('#cancelSale').onclick=closeSale;$('#confirmSale').onclick=commitSale;$('#saleDialog').addEventListener('cancel',event=>{event.preventDefault();closeSale()});
+const normalBuildMode=$('#buildMode').onclick;$('#buildMode').onclick=()=>editSession?setEditTool('build'):normalBuildMode();
+syncSystems();
+
+// Limit raster work on high-density phone displays without changing world/input coordinates.
+try{const preference=localStorage.getItem('grid-battery');$('#batterySaver').checked=preference===null?mobileLayout():preference!=='off'}catch{$('#batterySaver').checked=mobileLayout()}
+function resizeBoardBacking(){
+ if(!canvas.getBoundingClientRect)return;
+ const width=canvas.getBoundingClientRect().width,scale=batterySaving()&&mobileLayout()?Math.min(1,Math.max(1,width)*2/WORLD_W):1;
+ const w=Math.round(WORLD_W*scale),h=Math.round(WORLD_H*scale);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;renderDirty=true}
+}
+function syncBattery(){document.body.classList.toggle('battery-saving',batterySaving());resizeBoardBacking();renderDirty=true}
+$('#batterySaver').onchange=()=>{try{localStorage.setItem('grid-battery',batterySaving()?'on':'off')}catch{}syncBattery()};
+$('#reduced').onchange=()=>{try{localStorage.setItem('grid-reduced',$('#reduced').checked?'on':'off')}catch{}renderDirty=true};
+if(typeof ResizeObserver!=='undefined'){const boardSizer=new ResizeObserver(resizeBoardBacking);boardSizer.observe(canvas)}
+window.addEventListener('resize',resizeBoardBacking);syncBattery();
+
+$('#largeMachines').onclick=()=>{const first=$('.card[data-footprint="2"]'),shop=$('#shop');if(!first)return;if(mobileLayout())shop.scrollTo({left:first.offsetLeft,behavior:$('#reduced').checked?'auto':'smooth'});else first.scrollIntoView({block:'nearest',behavior:$('#reduced').checked?'auto':'smooth'})};
+</script><script>/* NIGHTFALL — layered, orthographic battlefield renderer. */
+const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;try{const preference=localStorage.getItem('grid-reduced');$('#reduced').checked=preference===null?reducedMotion:preference==='on'}catch{$('#reduced').checked=reducedMotion}
+function panel(g,x,y,w,h,light='#85908b',dark='#293432',radius=2){const grad=g.createLinearGradient(x,y,x+w*.5,y+h);grad.addColorStop(0,light);grad.addColorStop(.32,light);grad.addColorStop(1,dark);g.fillStyle=grad;g.beginPath();g.roundRect(x,y,w,h,radius);g.fill();g.strokeStyle='#d3ddd733';g.lineWidth=.7;g.stroke();g.fillStyle='#e3e9d32b';g.fillRect(x+2,y+1,w-4,1);g.fillStyle='#060c0c55';g.fillRect(x+2,y+h-2,w-4,1)}
+function disc(g,x,y,r,color){g.fillStyle=color;g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill()}
+function hull(g,points,color,edge='#bbcabf66'){g.fillStyle=color;g.strokeStyle=edge;g.lineWidth=.8;g.beginPath();points.forEach((p,i)=>i?g.lineTo(...p):g.moveTo(...p));g.closePath();g.fill();g.stroke()}
+function glow(g,x,y,r,color){if(batterySaving()||$('#reduced').checked)return;g.save();g.globalCompositeOperation='screen';const a=g.createRadialGradient(x,y,0,x,y,r);a.addColorStop(0,color);a.addColorStop(1,'#00000000');disc(g,x,y,r,a);g.restore()}
+function drawModel(g,type,{angle=-Math.PI/4,level=1,flash=0,time=0,terrain=false,span=types[type].size||1}={}){
+ if(type>=8){drawFieldMachine(g,type,level);return}
+ const trim=['#8095a3','#6dc6e4','#e1b965'][Math.max(0,Math.min(2,level-1))];
+ g.save();g.shadowColor='#000c';g.shadowBlur=batterySaving()?0:5;g.shadowOffsetY=4;
+ if(type===3){
+  panel(g,-22,-18,44,36,terrain?'#414954':'#68727c','#202a34',2);
+  for(const y of [-11,0,11])panel(g,-19,y-3,38,5,'#7b8992','#26343e',1);
+  for(const x of [-16,-8,0,8,16]){g.fillStyle=terrain?'#53606a':'#d4a763';g.fillRect(x-2,15,4,3)}
+  g.restore();return;
+ }
+ if(type===4&&span>1){panel(g,-42,-36,84,72,'#536171','#202936',5);for(const x of [-38,30])for(const y of [-31,23])panel(g,x,y,8,8,trim,'#344351',1);for(const y of [-29,26])panel(g,-23,y,46,4,'#88759f','#423c52',1);g.scale(1.45,1.45);}
+ g.scale(1.08+(level-1)*.055,1.08+(level-1)*.055);
+ // The foundation stays dark so the gun, rather than its platform, reads first.
+ hull(g,[[-15,-14],[12,-14],[17,-8],[17,11],[10,16],[-14,16],[-18,9],[-18,-8]],'#25313c','#516170');
+ g.shadowBlur=0;g.shadowOffsetY=0;
+ for(const x of [-15,12])panel(g,x-2,-10,5,22,'#586d7c','#1e2d3b',1);
+ g.fillStyle=trim;g.fillRect(-11,14,22,3);
+ if(level>1)for(const [x,y] of [[-15,-12],[12,-12],[-15,11],[12,11]]){panel(g,x-3,y-3,6,6,trim,'#293c49',1)}
+ g.save();g.rotate(angle);g.translate(flash>0?-Math.sin(flash/.13*Math.PI)*3:0,0);
+ drawUpgradeKit(g,type,level,time);
+ if(type===0){
+  hull(g,[[-16,-9],[-7,-14],[8,-10],[13,-4],[13,6],[3,12],[-15,8]],'#598d98','#b2d2d9');
+  panel(g,-13,-6,15,12,'#789fa9','#365461',2);
+  panel(g,2,-3.5,33,7,'#e0e8ec','#667a88',1);panel(g,27,-5,10,10,'#9caeb9','#344650',1);
+  g.fillStyle='#091019';g.fillRect(35,-3,4,6);g.fillStyle='#8aede0';g.fillRect(-10,-9,11,2);
+  for(const y of [-7,5])panel(g,7,y,25,2,'#a8eee6','#3b7b80',1);
+  for(const y of [0,4]){g.fillStyle='#263e4a';g.fillRect(-11,y,9,1.5)}
+ }else if(type===1){
+  hull(g,[[-18,-13],[7,-15],[17,-8],[17,9],[5,15],[-18,11]],'#8e795a','#cfba8e');
+  panel(g,-14,-16,10,32,'#b7a17a','#4f4231',2);
+  panel(g,-10,-9,36,18,'#d1bb8e','#6d5d45',5);panel(g,20,-11,9,22,'#7f745c','#32312b',2);
+  g.fillStyle='#0b1118';g.fillRect(26,-8,4,16);disc(g,-10,0,5,'#a99973');
+  for(const y of [-13,12]){g.fillStyle='#e0c98a';g.fillRect(-14,y,5,2)}
+ }else if(type===2){
+  hull(g,[[-17,-10],[-8,-17],[11,-13],[18,-3],[13,13],[-9,16]],'#567e93','#9bd5e7');
+  for(const x of [-14,12])for(const y of [-11,-3,5])panel(g,x-3,y,6,6,'#a8d1df','#395c70',1);
+  disc(g,0,0,11,'#142d40');g.strokeStyle='#9eddeb';g.lineWidth=3;g.beginPath();g.arc(0,0,9,time*.8,time*.8+Math.PI*1.7);g.stroke();disc(g,0,0,4,'#c1f2ff');
+  if(flash>0)glow(g,0,0,23,'#79d8fa65');
+ }else if(type===4){
+  hull(g,[[-17,0],[-12,-12],[7,-10],[16,0],[7,10],[-12,12]],'#746187','#c7b6df');
+  panel(g,-13,-7,14,14,'#a38db3','#4a3c60',2);
+  for(const y of [-6,3]){panel(g,0,y,42,3,'#dce4ed','#647783',1);g.fillStyle='#77619c';g.fillRect(6,y+1,33,1)}
+  g.fillStyle='#c6a4f4';g.fillRect(4,-1,35,2);g.fillStyle='#0c1320';g.fillRect(39,-7,4,14);
+ }else if(type===5){
+  hull(g,[[-17,-11],[13,-11],[18,0],[10,15],[-13,14],[-20,1]],'#687854','#adc98a');
+  disc(g,0,0,12,'#20302a');for(const r of [10,6]){g.strokeStyle=r===10?'#94b077':'#d5e9aa';g.lineWidth=3;g.beginPath();g.arc(0,0,r,0,7);g.stroke()}
+  for(const a of [0,2.094,4.188]){g.save();g.rotate(a);panel(g,10,-3,8,6,'#c2d4a2','#5a6e43',1);g.restore()}
+  disc(g,0,0,2.5,'#e2ffd2');if(flash>0)glow(g,0,0,28,'#b8ef9560');
+ }else if(type===6){
+  hull(g,[[-17,-12],[5,-12],[13,-5],[13,9],[-13,14],[-19,6]],'#986d59','#d2ad94');
+  disc(g,-10,3,10,'#56473a');disc(g,-10,3,7,'#c29c70');
+  for(const y of [-7,-2,3,8])panel(g,1,y,32,2.5,'#d1d9dc','#455863',1);
+  panel(g,27,-9,8,22,'#a6b6bf','#3d4b56',1);
+  g.fillStyle='#101922';for(const y of [-6,-1,4])g.fillRect(31,y,5,2);
+  panel(g,-15,-14,14,5,'#c1a080','#5a493b',1);
+ }else if(type===7){
+  hull(g,[[-13,-10],[10,-10],[17,0],[9,12],[-14,12],[-18,0]],'#536d90','#a7c4df');
+  for(const y of [-14,6]){panel(g,-14,y,34,9,'#aec1d4','#405875',2);for(const x of [-9,0,9]){g.fillStyle='#1c3047';g.fillRect(x,y+2,5,5);g.fillStyle='#d4e4ed';g.fillRect(x,y+2,5,1)}g.fillStyle='#dabf7b';g.fillRect(19,y+1,3,7)}
+  panel(g,-15,-4,20,8,'#7f9eba','#36516c',2);
+ }
+ if(flash>0&&![2,5].includes(type)){glow(g,37,0,type===1?15:10,'#ffc87770');hull(g,[[33,-3],[41,-2],[46,0],[40,3],[34,2]],'#fff2cb','transparent')}
+ g.restore();g.restore();
+}
+
+function drawFieldMachine(g,type,level){
+ const ice=type===9,c=ice?'#9de4f5':'#ead18d',trim=level===3?'#e7c57c':level===2?'#9fd9ee':'#728b9d';g.save();
+ panel(g,-42,-42,84,84,'#405565','#152530',6);
+ for(const x of [-35,25])for(const y of [-35,25])panel(g,x,y,10,10,trim,'#273c48',2);
+ for(const x of [-33,23]){panel(g,x,-24,10,48,ice?'#74a5bc':'#b89961','#243e50',3);for(let y=-20;y<24;y+=8){g.fillStyle='#15232d';g.fillRect(x+2,y,6,3)}}
+ if(ice){for(let n=0;n<6;n++){g.save();g.rotate(n*Math.PI/3);hull(g,[[9,-5],[25,-5],[32,0],[25,5],[9,5]],'#71c6e2','#b8f2ff');g.restore()}disc(g,0,0,16,'#173d52');disc(g,0,0,10,c);g.strokeStyle='#b6f2ff';g.lineWidth=2;g.beginPath();g.arc(0,0,23,0,Math.PI*2);g.stroke()}
+ else{panel(g,-18,-26,36,52,'#bea36a','#4b493b',4);for(const y of [-16,-6,4,14])panel(g,-12,y,24,6,c,'#66704f',2);for(const x of [-22,19]){g.fillStyle='#91c9c0';g.fillRect(x,-18,3,36)}}
+ if(level>1){g.strokeStyle=trim;g.lineWidth=3;g.strokeRect(-38,-38,76,76);for(const y of [-34,29])panel(g,-18,y,36,5,trim,'#304956',1)}g.restore();
+}
+function drawFieldAuras(){
+
+ for(const b of buildings.values())if(types[b.type].rate&&relayBonus(b)>0){ctx.save();ctx.strokeStyle='#e2c47d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(centerX(b)*S,centerY(b)*S,spanOf(b)*S*.37,Math.PI*.1,Math.PI*.9);ctx.stroke();ctx.restore()}
+}
+
+const machineSprites=new Map();
+function drawMachine(g,type,options){
+ if(!batterySaving()){drawModel(g,type,options);return}
+ const direction=((Math.round((options.angle||0)*32/(Math.PI*2))%32)+32)%32,id=[type,options.level||1,direction,!!options.terrain,options.span||types[type].size||1].join(':');let sprite=machineSprites.get(id);
+ if(!sprite){sprite=document.createElement('canvas');sprite.width=type===4||type>=8?192:144;sprite.height=sprite.width;const image=sprite.getContext('2d');image.translate(sprite.width/2,sprite.height/2);drawModel(image,type,{angle:direction*Math.PI*2/32,level:options.level,time:0,terrain:options.terrain,span:options.span});machineSprites.set(id,sprite);if(machineSprites.size>160)machineSprites.delete(machineSprites.keys().next().value)}
+ g.drawImage(sprite,-sprite.width/2,-sprite.height/2);
+ if(options.flash>0&&![2,3,5].includes(type)){g.save();g.rotate(options.angle||0);g.globalAlpha=Math.min(1,options.flash/.1);hull(g,[[35,-3],[43,-2],[49,0],[42,3],[36,2]],'#ffe2a2','transparent');g.restore()}
+}
+
+function drawUpgradeKit(g,type,level,time){
+ if(level<2)return;const trim=level===3?'#e5c47e':'#83cde7',dark=level===3?'#62543a':'#345466';
+ if(type===0){
+  for(const y of [-18,12])panel(g,-16,y,22,6,trim,dark,2);
+  if(level===3)for(const y of [-9,7]){panel(g,0,y,34,3,'#cad9e3','#526974',1);g.fillStyle=trim;g.fillRect(26,y,6,2)}
+ }else if(type===1){
+  for(const y of [-21,16]){panel(g,-20,y,36,5,trim,dark,1);panel(g,-18,y-1,7,7,'#d4c4a3','#645437',2)}
+  if(level===3)for(const x of [-17,-7,3])panel(g,x,-23,6,7,'#e2d4a9','#7a6540',2);
+ }else if(type===2){
+  g.strokeStyle=trim;g.lineWidth=2.5;g.beginPath();g.arc(0,0,20,0,Math.PI*2);g.stroke();
+  for(let n=0;n<(level===3?6:3);n++){g.save();g.rotate(n*Math.PI*2/(level===3?6:3));panel(g,16,-3,9,6,trim,dark,1);g.restore()}
+ }else if(type===4){
+  for(const y of [-17,12]){panel(g,-16,y,25,5,trim,dark,1);for(let x=-12;x<8;x+=6){g.fillStyle='#1a2632';g.fillRect(x,y+1,2,3)}}
+  if(level===3)for(const y of [-11,9]){panel(g,8,y,34,3,'#cbb7df','#66547b',1);g.fillStyle=trim;g.fillRect(20,y,15,1)}
+ }else if(type===5){
+  for(let n=0;n<(level===3?6:3);n++){g.save();g.rotate(n*Math.PI*2/(level===3?6:3));panel(g,13,-3,12,6,trim,dark,1);disc(g,24,0,3,'#d5f4ae');g.restore()}
+  if(level===3){g.strokeStyle='#a4ca7c';g.lineWidth=1.5;g.beginPath();g.arc(0,0,21,0,Math.PI*2);g.stroke()}
+ }else if(type===6){
+  for(const y of [-20,14]){panel(g,-18,y,20,7,trim,dark,2);for(let x=-16;x<0;x+=4){g.fillStyle='#2d3438';g.fillRect(x,y+1,2,5)}}
+  if(level===3){disc(g,-20,0,8,'#c5a371');disc(g,-20,0,5,'#493d32');panel(g,4,-13,27,4,'#d6c6a0','#655841',1)}
+ }else if(type===7){
+  for(const y of [-23,18]){panel(g,-15,y,34,6,trim,dark,2);for(const x of [-10,-2,6]){g.fillStyle='#172838';g.fillRect(x,y+1,4,4)}}
+  if(level===3){panel(g,-11,-5,30,10,'#dfd0a4','#655945',2);for(const x of [-5,4,13])disc(g,x,0,2,'#b2e0f4')}
+ }
+}
+function drawTacticalOverlay(){
+ if(overdriveTime>0)for(const b of buildings.values()){if(!types[b.type].rate)continue;ctx.save();ctx.translate((centerX(b))*S,(centerY(b))*S);ctx.strokeStyle='#edc777a0';ctx.lineWidth=2;const a=$('#reduced').checked?0:renderClock*2;for(let n=0;n<3;n++){ctx.beginPath();ctx.arc(0,0,23,a+n*Math.PI*2/3,a+n*Math.PI*2/3+.9);ctx.stroke()}ctx.restore()}
+ if(markedEnemy?.hp>0&&active){const e=markedEnemy,r=e.boss?40:30;ctx.save();ctx.translate(e.x*S,e.y*S);ctx.strokeStyle='#f5bc73';ctx.lineWidth=2.5;for(let n=0;n<4;n++){ctx.save();ctx.rotate(n*Math.PI/2);ctx.beginPath();ctx.moveTo(-6,-r+5);ctx.lineTo(0,-r);ctx.lineTo(6,-r+5);ctx.stroke();ctx.restore()}ctx.restore()}
+ if(!editSession)return;
+ const original=new Map(editSession.original.buildings.map(b=>[key(b.x,b.y),b]));ctx.save();ctx.strokeStyle='#e1c37c99';ctx.lineWidth=1.5;
+ for(const b of buildings.values()){const old=original.get(key(b.x,b.y));if(b.terrain||old&&old.type===b.type&&old.level===b.level&&targetMode(old)===targetMode(b))continue;ctx.strokeRect(b.x*S+3,b.y*S+3,S*spanOf(b)-6,S*spanOf(b)-6)}
+ for(const b of editSession.original.buildings){if(b.terrain||buildings.has(key(b.x,b.y)))continue;ctx.save();ctx.translate((centerX(b))*S,(centerY(b))*S);ctx.globalAlpha=.3;drawMachine(ctx,b.type,{level:b.level,angle:b.angle||0});ctx.globalAlpha=1;ctx.strokeStyle='#f29887';ctx.lineWidth=3;const r=spanOf(b)*S/2-4;ctx.strokeRect(-r,-r,r*2,r*2);ctx.beginPath();ctx.moveTo(-14,-14);ctx.lineTo(14,14);ctx.moveTo(14,-14);ctx.lineTo(-14,14);ctx.stroke();ctx.restore()}
+ ctx.restore();
+}
+
+let floorCache=null;
+function drawFloor(){
+ if(!floorCache||floorCache.width!==WORLD_W||floorCache.height!==WORLD_H||floorCache.hubs!==hubRows.join(',')){
+  floorCache=document.createElement('canvas');floorCache.width=WORLD_W;floorCache.height=WORLD_H;floorCache.hubs=hubRows.join(',');const g=floorCache.getContext('2d');
+  const base=g.createLinearGradient(0,0,WORLD_W,WORLD_H);base.addColorStop(0,'#121b25');base.addColorStop(.55,'#0d151e');base.addColorStop(1,'#141b25');g.fillStyle=base;g.fillRect(0,0,WORLD_W,WORLD_H);
+  let seed=417;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+  for(let i=0;i<8500;i++){g.fillStyle=i%3?'#b8cfdf05':'#00000012';g.fillRect(rand()*WORLD_W,rand()*WORLD_H,1+rand()*2,1)}
+  // Long, irregular utility seams; deliberately no tile or checkerboard pattern.
+  for(let i=0;i<13;i++){const x=rand()*WORLD_W,y=rand()*WORLD_H;g.strokeStyle='#6a81900c';g.lineWidth=1;g.beginPath();g.moveTo(x,y);g.lineTo(x+70+rand()*170,y+30);g.stroke()}
+  g.fillStyle='#080f17';g.fillRect(0,0,WORLD_W,13);g.fillRect(0,WORLD_H-13,WORLD_W,13);g.fillRect(0,0,8,WORLD_H);g.fillRect(WORLD_W-8,0,8,WORLD_H);
+  g.strokeStyle='#344752';g.lineWidth=1;g.strokeRect(8.5,13.5,WORLD_W-17,WORLD_H-27);
+  for(let x=50;x<WORLD_W-30;x+=137){g.fillStyle='#253a47';g.fillRect(x,5,48,3);g.fillRect(x,WORLD_H-8,48,3);g.fillStyle='#639a9e';g.fillRect(x+10,7,24,1)}
+  for(const row of hubRows){const light=g.createRadialGradient(0,(row+.5)*S,1,0,(row+.5)*S,110);light.addColorStop(0,'#c26d3512');light.addColorStop(1,'#00000000');g.fillStyle=light;g.fillRect(0,(row+.5)*S-110,110,220)}
+  const light=g.createRadialGradient(WORLD_W, WORLD_H/2,1,WORLD_W,WORLD_H/2,150);light.addColorStop(0,'#51c8c012');light.addColorStop(1,'#0000');g.fillStyle=light;g.fillRect(WORLD_W-150,0,150,WORLD_H);
+ }
+ ctx.drawImage(floorCache,0,0);
+}
+function drawCore(){
+ ctx.save();ctx.translate((exit.x+.5)*S,(exit.y+.5)*S);
+ hull(ctx,[[-21,-13],[-10,-23],[13,-23],[22,-12],[22,13],[10,23],[-12,23],[-22,11]],'#233b47','#7bc6c2');
+ hull(ctx,[[-13,-9],[-6,-15],[9,-15],[15,-6],[15,9],[5,15],[-10,15],[-15,5]],'#102f38','#4d8f91');
+ glow(ctx,0,0,28,health>5?'#70eceb25':'#ff817a25');disc(ctx,0,0,7,'#bcfff2');
+ ctx.strokeStyle=health>5?'#73d9d0':'#f29a82';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,11,-Math.PI/2,-Math.PI/2+Math.PI*2*health/20);ctx.stroke();ctx.restore();
+}
+
+function drawVehicle(g,e,time){const c=e.slow?'#9be9ff':e.boss?'#c79283':e.armored?'#acb298':'#c8c2a4';const angle=e.heading||0;g.save();g.translate(e.x*S,e.y*S);g.rotate(angle);g.scale(e.boss?1.65:e.fast?.83:e.armored?1.13:1,e.boss?1.65:e.fast?.83:e.armored?1.13:1);g.shadowColor='#000b';g.shadowBlur=batterySaving()?0:4;g.shadowOffsetX=3;g.shadowOffsetY=6;
+ if(e.flying){g.shadowBlur=batterySaving()?0:9;g.shadowOffsetY=11;g.strokeStyle='#8d9788';g.lineWidth=3;g.beginPath();g.moveTo(-12,-13);g.lineTo(12,13);g.moveTo(12,-13);g.lineTo(-12,13);g.stroke();panel(g,-10,-6,22,12,'#d3a17d','#7b4d37',4);g.shadowBlur=0;g.shadowOffsetX=0;g.shadowOffsetY=0;for(const x of [-13,13])for(const y of [-13,13]){disc(g,x,y,8,'#101a16a0');g.strokeStyle='#d2d5b575';g.lineWidth=1;g.beginPath();g.arc(x,y,8,0,7);g.stroke();g.save();g.translate(x,y);g.rotate(time*50);g.fillStyle='#b4c0a19a';g.fillRect(-8,-1,16,2);g.fillRect(-1,-8,2,16);g.restore()}g.fillStyle='#d9ad7d';g.fillRect(10,-2,3,4)}
+ else{for(const y of [-14,8]){panel(g,-17,y,34,7,'#485145','#19241c',3);for(let x=-16;x<17;x+=5){g.fillStyle='#8b938171';g.fillRect(x+(time*e.speed*18)%5,y+1,1.5,5)}}hull(g,[[-16,-9],[9,-9],[17,-6],[17,6],[9,9],[-16,9]],e.armored?'#ac8274':'#a99585');g.shadowBlur=0;g.shadowOffsetX=0;g.shadowOffsetY=0;panel(g,-10,-7,18,14,'#c6b29e','#786052');if(e.armored||e.boss){panel(g,-7,-9,20,18,'#bd8f7e','#79584f',4);panel(g,5,-2,23,4,'#c0c9ac','#627259');g.fillStyle='#1f2d20';g.fillRect(25,-1,3,2)}else{g.fillStyle='#263c3a';g.fillRect(7,-6,5,12);g.fillStyle='#a5b9ab';g.fillRect(8,-5,1,10);panel(g,-13,-5,8,10,'#6b735d','#394c32')}for(const y of [-8,6]){g.fillStyle='#ffdf9c';g.fillRect(14,y,3,2)}g.fillStyle='#d06d53';g.fillRect(-16,-7,2,4);g.fillRect(-16,4,2,4)}
+ if(e.shieldCarrier){g.strokeStyle=e.emp>0?'#758784':'#a6dcff';g.fillStyle=e.emp>0?'#3c4a4c':'#254d6c';g.lineWidth=2.5;g.beginPath();g.moveTo(-6,-6);g.lineTo(6,-6);g.lineTo(6,3);g.lineTo(0,10);g.lineTo(-6,3);g.closePath();g.fill();g.stroke()}if(e.slow||cryoFactor(e)<1){g.strokeStyle='#a7e9f9aa';g.lineWidth=1;g.strokeRect(-19,-17,38,34)}g.restore();if(e.hit>0){g.save();g.globalAlpha=Math.min(1,e.hit*8);g.strokeStyle=e.hitColor||'#f2d5a0';g.lineWidth=3;g.beginPath();g.arc(e.x*S,e.y*S,18,0,7);g.stroke();g.restore()}if(e.hp<e.max||e.boss){g.fillStyle='#0c1612bb';g.fillRect(e.x*S-15,e.y*S-26,30,3);g.fillStyle=e.hp/e.max>.4?'#d6c496':'#e58b65';g.fillRect(e.x*S-15,e.y*S-26,30*Math.max(0,e.hp/e.max),3)}}
+function drawBreach(g,row,index){const y=(row+.5)*S;g.save();g.translate(0,y);panel(g,0,-23,39,46,'#58635a','#252f2a');g.fillStyle='#19221d';g.fillRect(1,-17,26,34);for(let i=-18;i<20;i+=7){g.fillStyle='#826b44';g.fillRect(32,i,5,4)}g.strokeStyle='#d9a27b';g.lineWidth=2;g.beginPath();g.moveTo(12,-7);g.lineTo(20,0);g.lineTo(12,7);g.stroke();glow(g,19,0,23,'#ef6c3925');g.fillStyle='#ad957c';g.font='6px monospace';g.fillText('0'+index,3,-18);g.restore()}
+function renderProjectile(g,p){if(p.hit)return;const t=Math.min(1,p.elapsed/p.duration),x=(p.x+(p.tx-p.x)*t)*S,y=(p.y+(p.ty-p.y)*t)*S-Math.sin(t*Math.PI)*(p.type===1?35:0),a=Math.atan2(p.ty-p.y,p.tx-p.x);g.save();g.translate(x,y);g.rotate(a);if(p.type===1){glow(g,0,0,12,'#ffb66166');disc(g,0,0,3,'#fff0b4')}else if(p.type===7){g.fillStyle='#c9d0b4';g.fillRect(-5,-2,10,4);glow(g,-7,0,8,'#fbb666a0');g.fillStyle='#ffdfa1';g.fillRect(-10,-1,6,2)}else if(p.type===2){glow(g,0,0,10,'#81c7f766');disc(g,0,0,2,'#c9f8ff')}else{g.strokeStyle=p.type===0?'#b9f5ee':'#ffd5a0';g.lineWidth=p.type===6?1.8:2.6;g.beginPath();g.moveTo(-9,0);g.lineTo(2,0);g.stroke();glow(g,0,0,4,'#ffca6999')}g.restore()}
+function renderBurst(g,b){const t=1-b.life/b.max,r=Math.max(1,b.r*t);g.save();g.globalAlpha=Math.max(0,1-t);if(b.emp||b.build||b.ice){g.strokeStyle=b.emp?'#94d8fa':b.ice?'#b9f4ff':'#a1e3c1';g.lineWidth=b.emp?3:1.5;g.beginPath();g.arc(b.x,b.y,r,0,7);g.stroke();if(b.emp)glow(g,b.x,b.y,r,'#73ceff0a')}else{glow(g,b.x,b.y,r,'#ff813b8a');glow(g,b.x,b.y,r*.55,'#ffda8acc');if(t>.3){g.globalAlpha=(1-t)*.4;disc(g,b.x,b.y-10*t,r*.65,'#22251f')}}g.restore()}
+function drawRoutePreview(){
+ if(marking||editSession&&editTool!=='build')return;
+ const tile=!panMode&&(pending||hover);if(!tile)return;
+ const paths=validity(tile.x,tile.y).paths;if(!paths)return;
+ ctx.save();ctx.strokeStyle='#89c6bb';ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';ctx.setLineDash([8,5]);ctx.lineDashOffset=$('#reduced').checked?0:-renderClock*18;
+ for(const path of paths){if(!path)continue;ctx.beginPath();path.forEach((p,j)=>j?ctx.lineTo((p.x+.5)*S,(p.y+.5)*S):ctx.moveTo((p.x+.5)*S,(p.y+.5)*S));ctx.stroke()}
+ ctx.restore();
+}
+function draw(){ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.shadowBlur=0;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.setTransform(canvas.width/WORLD_W,0,0,canvas.height/WORLD_H,0,0);ctx.translate(view.x,view.y);ctx.scale(view.zoom,view.zoom);ctx.imageSmoothingEnabled=true;drawFloor();
+ for(const a of scorches){const g=ctx.createRadialGradient(a.x,a.y,1,a.x,a.y,a.r);g.addColorStop(0,'#040a07cc');g.addColorStop(1,'#0000');disc(ctx,a.x,a.y,a.r,g);ctx.save();ctx.translate(a.x,a.y);ctx.rotate(a.x*.1);ctx.fillStyle='#19241caa';ctx.fillRect(-5,-3,9,5);ctx.restore()}
+
+ drawRoutePreview();drawSelectedRange();
+ hubRows.forEach((row,i)=>drawBreach(ctx,row,i+1));
+ drawCore();drawFieldAuras();drawLargeFoundations();
+ for(const b of buildings.values()){ctx.save();ctx.translate((centerX(b))*S,(centerY(b))*S);drawMachine(ctx,b.type,{angle:b.renderAngle??b.angle??0,level:b.level,flash:b.flash||0,time:renderClock,terrain:b.terrain,span:spanOf(b)});if(focused===key(b.x,b.y)){const r=spanOf(b)*S/2;ctx.strokeStyle='#c6ebaa';ctx.lineWidth=1;for(const [x,y,dx,dy] of [[-r,-r,1,1],[r,-r,-1,1],[-r,r,1,-1],[r,r,-1,-1]]){ctx.beginPath();ctx.moveTo(x,y+dy*7);ctx.lineTo(x,y);ctx.lineTo(x+dx*7,y);ctx.stroke()}}ctx.restore()}
+ for(const e of enemies){if(e.shieldCarrier&&!(e.emp>0)){ctx.save();ctx.strokeStyle='#7ecfff99';ctx.fillStyle='#68b9ee0a';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(e.x*S,e.y*S,1.7*S,0,7);ctx.fill();ctx.stroke();ctx.restore()}drawVehicle(ctx,e,renderClock)}
+ for(const p of projectiles)renderProjectile(ctx,p);
+ for(const f of effects){ctx.save();ctx.globalAlpha=Math.max(0,f.life/(f.max||.19));ctx.strokeStyle=f.type===5?'#c4e6a7':'#e8c9ff';ctx.lineWidth=f.type===5?3.5:2.5;ctx.shadowBlur=batterySaving()?0:8;ctx.shadowColor=f.color;ctx.beginPath();ctx.moveTo(f.x*S,f.y*S);if(f.type===5){for(let i=1;i<7;i++){const t=i/7,off=Math.sin(i*19+renderClock*36)*7;ctx.lineTo((f.x+(f.tx-f.x)*t)*S+off,(f.y+(f.ty-f.y)*t)*S-off)}}ctx.lineTo(f.tx*S,f.ty*S);ctx.stroke();ctx.restore()}
+ for(const b of bursts)renderBurst(ctx,b);if(!$('#reduced').checked)for(const p of particles){ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,2,2)}ctx.globalAlpha=1;
+ drawPlacement();drawTacticalOverlay();drawPriorityTarget();ctx.restore();drawInspector();}
+function drawSelectedRange(){
+ const b=buildings.get(focused);if(!b||b.terrain||!types[b.type].range)return;
+ ctx.save();ctx.beginPath();ctx.arc((centerX(b))*S,(centerY(b))*S,(types[b.type].range+(b.level-1)*.25)*S,0,Math.PI*2);ctx.fillStyle='#7cdbce07';ctx.fill();ctx.strokeStyle='#7cdbce72';ctx.lineWidth=1.4;ctx.stroke();ctx.restore();
+}
+function drawPriorityTarget(){
+ const b=buildings.get(focused),e=b&&!b.terrain&&active?pickTarget(b):null;if(!e)return;
+ const r=e.boss?30:23;ctx.save();ctx.translate(e.x*S,e.y*S);ctx.strokeStyle='#b2f4e8';ctx.lineWidth=2;
+ for(const [x,y,dx,dy] of [[-r,-r,1,1],[r,-r,-1,1],[-r,r,1,-1],[r,r,-1,-1]]){ctx.beginPath();ctx.moveTo(x,y+dy*8);ctx.lineTo(x,y);ctx.lineTo(x+dx*8,y);ctx.stroke()}
+ ctx.restore();
+}
+let inspectorCacheKey='';
+function drawInspector(){const c=$('#unitPreview'),g=c.getContext('2d'),b=buildings.get(focused),i=b?b.type:selected>=0&&selected!==null?selected:0;const cacheKey=i+':'+(b?.level||1);if(cacheKey===inspectorCacheKey)return;inspectorCacheKey=cacheKey;g.clearRect(0,0,240,150);g.save();g.translate(130,77);g.scale(i>=8||i===4?1.15:1.75,i>=8||i===4?1.15:1.75);g.strokeStyle='#6c896426';g.lineWidth=.5;g.beginPath();g.ellipse(0,4,39,29,0,0,7);g.stroke();drawModel(g,i,{angle:-.55,level:b?.level||1,time:0});g.restore();}
+function makeThumbnails(){document.querySelectorAll('.model-thumb').forEach((c,index)=>{const i=shopTypes[index];const g=c.getContext('2d');g.save();g.translate(65,54);const scale=i>=8||i===4?.85:1.4;g.scale(scale,scale);drawModel(g,i,{angle:-.6,time:0});g.restore()})}makeThumbnails();
+
+
+// Safari may discard canvas contents while backgrounded or under memory pressure.
+function restoreBattlefield(){
+ machineSprites.clear();floorCache=null;inspectorCacheKey='';
+ canvas.width=canvas.width;renderDirty=true;
+}
+canvas.addEventListener('contextlost',event=>{event.preventDefault();renderDirty=true});
+canvas.addEventListener('contextrestored',restoreBattlefield);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)restoreBattlefield()});
+window.addEventListener('pageshow',restoreBattlefield);
+
+function drawLargeFoundations(){for(const b of buildings.values()){if(spanOf(b)!==2)continue;ctx.save();ctx.translate(centerX(b)*S,centerY(b)*S);ctx.strokeStyle='#9bb7bf88';ctx.lineWidth=2;const r=S-2;for(const [x,y,dx,dy] of [[-r,-r,1,1],[r,-r,-1,1],[-r,r,1,-1],[r,r,-1,-1]]){ctx.beginPath();ctx.moveTo(x,y+dy*11);ctx.lineTo(x,y);ctx.lineTo(x+dx*11,y);ctx.stroke()}ctx.restore()}}
+</script><script>/* Browser-local, preparation-phase checkpoints. Never stores partial combat. */
+const checkpointKey='grid-nightfall-checkpoint-v1';let checkpointReady=false,checkpointRestoring=false;
+function checkpointReset(){if(!checkpointReady||checkpointRestoring)return;try{localStorage.removeItem(checkpointKey)}catch{}}
+function saveCheckpoint(){if(!checkpointReady||checkpointRestoring||active||ended||editSession)return;const data={version:1,w:W,h:H,hubCount:hubRows.length,wave,health,gold,perfectStreak,kills,map:$('#map').value,difficulty:$('#difficulty').value,air:$('#air').checked,endless:$('#endless').checked,buildings:[...buildings.values()].map(b=>({x:b.x,y:b.y,type:b.type,span:spanOf(b),level:b.level,invested:b.invested,terrain:!!b.terrain,targeting:targetMode(b),angle:b.angle||0,cool:0})),savedAt:Date.now()};try{localStorage.setItem(checkpointKey,JSON.stringify(data))}catch{say('Browser storage unavailable. Keep this tab open to preserve your run.')}}
+function validFootprints(d){const cells=new Set();for(const b of d.buildings){const span=b.span||1;if(![1,2].includes(span)||b.x+span>d.w-1||b.y+span>d.h)return false;for(let y=b.y;y<b.y+span;y++)for(let x=b.x;x<b.x+span;x++){const id=y*d.w+x;if(cells.has(id))return false;cells.add(id)}}return true}
+function validCheckpoint(d){return d&&d.version===1&&((d.w===20&&d.h===11)||(d.w===28&&d.h===15))&&[3,5].includes(d.hubCount||3)&&Number.isInteger(d.wave)&&d.wave>=0&&d.wave<10000&&Number.isFinite(d.gold)&&d.gold>=0&&Number.isFinite(d.health)&&d.health>0&&d.health<=20&&Array.isArray(d.buildings)&&d.buildings.length<=d.w*d.h&&d.buildings.every(b=>Number.isInteger(b.x)&&b.x>0&&b.x<d.w-1&&Number.isInteger(b.y)&&b.y>=0&&b.y<d.h&&Number.isInteger(b.type)&&types[b.type]&&Number.isInteger(b.level)&&b.level>=1&&b.level<=3&&Number.isFinite(b.invested)&&b.invested>=0)&&validFootprints(d)&&['open','alleys','islands'].includes(d.map)&&['0.7','1','1.5'].includes(d.difficulty)}
+function restoreCheckpointBuildings(data){
+ const repairs=data.buildings.filter(b=>b.type>=8&&b.span!==2);let credit=0,count=0;
+ buildings=new Map(data.buildings.filter(b=>!repairs.includes(b)).map(b=>[key(b.x,b.y),{...b,span:b.type>=8?2:b.span||1,targeting:targetMode(b)}]));invalidate();
+ for(const original of repairs){const b={...original,span:2,targeting:targetMode(original)},cells=areaCells(b.x,b.y,2);let fits=b.x+2<=W-1&&b.y+2<=H&&!cells.some(c=>structureAt(c.x,c.y));
+  if(fits){buildings.set(key(b.x,b.y),b);invalidate();if(hubRows.some(row=>!route(0,row))){buildings.delete(key(b.x,b.y));invalidate();fits=false}}
+  if(!fits){credit+=b.invested;count++}
+ }
+ return {credit,count,repaired:repairs.length};
+}
+let savedCheckpoint=null;try{const value=JSON.parse(localStorage.getItem(checkpointKey));if(validCheckpoint(value)&&(value.wave>0||value.buildings.some(b=>!b.terrain)))savedCheckpoint=value}catch{}
+checkpointReady=true;
+if(savedCheckpoint){$('#resumeInfo').textContent='Saved after wave '+savedCheckpoint.wave+' · $'+savedCheckpoint.gold.toLocaleString()+' · '+savedCheckpoint.health+'/20 core integrity.';$('#resumeDialog').showModal();}
+$('#resumeRun').onclick=()=>{const d=savedCheckpoint;if(!d)return;checkpointRestoring=true;$('#size').value=d.w===20?'compact':'expanded';$('#hubs').value=String(d.hubCount||3);chosenSize=$('#size').value;chosenHubs=$('#hubs').value;$('#map').value=d.map;chosenMap=d.map;$('#difficulty').value=d.difficulty;$('#air').checked=d.air;$('#endless').checked=d.endless;reset();const repair=restoreCheckpointBuildings(d);if(hubRows.some(row=>!route(0,row))){reset();say('That checkpoint could not be restored. A fresh mission is ready.')}else{wave=d.wave;health=d.health;gold=d.gold+repair.credit;perfectStreak=d.perfectStreak||0;kills=d.kills||0;choose(0);queueNextWave();update();if(repair.repaired)autoTime=0;say(repair.repaired?(repair.count?'Repaired hub sizes. $'+repair.credit.toLocaleString()+' returned for '+repair.count+' hubs without safe 2×2 space. Rebuild when ready.':'Saved hubs repaired to full 2×2 footprints. Launch when ready.'):autoTime>0?'Checkpoint restored. The next wave starts automatically in five seconds.':'Checkpoint restored. Launch wave '+(wave+1)+' when ready.')}checkpointRestoring=false;if(repair.repaired)saveCheckpoint();$('#resumeDialog').close();};
+$('#newRun').onclick=()=>{savedCheckpoint=null;checkpointReset();reset();$('#resumeDialog').close()};
+$('#resumeDialog').addEventListener('cancel',e=>{e.preventDefault()});
+window.addEventListener('pagehide',saveCheckpoint);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveCheckpoint()});
+
+// Portable backup protects checkpoints if browser storage is cleared.
+$('#exportSave').onclick=()=>{try{saveCheckpoint();const raw=localStorage.getItem(checkpointKey);if(!raw||!validCheckpoint(JSON.parse(raw))){say('Build a defense between waves first to create a save.');return}const url=URL.createObjectURL(new Blob([raw],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='nightfall-save.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);say(active?'Downloaded the checkpoint from before this wave.':'Save downloaded. Keep it in Files for a safe backup.')}catch{say('Could not download a save. Browser storage may be unavailable.')}};
+$('#importSave').onclick=()=>$('#saveFile').click();
+$('#saveFile').onchange=async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{if(file.size>1000000)throw Error('size');const d=JSON.parse(await file.text());if(!validCheckpoint(d))throw Error('invalid');if(!confirm('Load this save? It replaces your current run with wave '+d.wave+' and $'+d.gold.toLocaleString()+'.'))return;localStorage.setItem(checkpointKey,JSON.stringify(d));savedCheckpoint=d;$('#resumeRun').click();paused=true;autoTime=0;update();say('Backup loaded. Resume or launch when ready.')}catch{say('That file is not a valid Nightfall save. Your current run is unchanged.')}};
+</script>
+</body></html>
